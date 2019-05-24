@@ -1,0 +1,167 @@
+#!/bin/bash
+
+# CONSTANTS
+reset_color=`tput sgr0`
+use_red_color=`tput setaf 1`
+treesitter_parsers_directory="silver-syntax-highlighter/treesitter"
+
+script_startup()
+{
+case `uname` in
+*Darwin*)
+  READLINK=greadlink
+  if [ ! -f `which greadlink` ]; then
+    echo "Missing greadlink. Please install coreutils:" 
+    echo -e "\tbrew install coreutils"
+    exit 4
+  fi
+  ;;
+*)
+  READLINK=readlink
+  ;;
+esac
+  if [ ! -f ~/bin/silver ]; then
+    echo "Silver not able to be found. Abort"
+    exit 4
+  fi
+  if [ ! -f ~/bin/silver-ide ]; then
+    echo "Silver-IDE not able to be found. Abort"
+    exit 4
+  fi
+  SILVER_SCRIPT=`${READLINK} ~/bin/silver`
+  SILVER_HOME="${SILVER_SCRIPT/support\/bin\/silver/}"
+  SILVER_IDE_SCRIPT=`${READLINK} ~/bin/silver-ide`
+  SILVER_IDE_HOME="${SILVER_IDE_SCRIPT/scripts\/silver-ide/}"
+}
+
+generate_treesitter_parser()
+{
+  echo Generating tree-sitter parser
+  cd ~
+  if [ ! -d $treesitter_parsers_directory ]; then
+    mkdir -p $treesitter_parsers_directory
+  fi
+  cd $treesitter_parsers_directory
+  if [ -d "tree-sitter-$lang_name" ]; then  
+    cd tree-sitter-$lang_name
+    if [ "$version_num" = "" -a "$version_update_type" = "" ]; then
+      npm version minor  # update version number
+    fi
+  else
+    mkdir tree-sitter-$lang_name
+    cd tree-sitter-$lang_name
+    npm config set scope $package_scope
+    npm install --save nan
+    npm install --save-dev tree-sitter-cli
+  fi
+  treesitter_dir=$(pwd)
+  cp $original_dir/grammar.js $treesitter_dir/
+  if [ "$version_num" != "" ]; then
+    old_version_num=`node -pe "require('./package.json').version"`
+    npm version $version_num --allow-same-version
+    echo Version Number Updated from $old_version_num to $version_num
+  fi
+  if [ "$version_update_type" != "" ]; then
+    npm version $version_update_type
+  fi
+  tree-sitter generate
+  npm install
+  if [ $publish_parser = true ]; then
+    npm publish --access public
+  fi
+  echo Tree-sitter parser generated
+}
+
+modify_grammar_js()
+{
+  echo "Adding conflicts to grammar.js file"
+  java -jar $SILVER_HOME/jars/CopperCompiler.jar -dump -dumpfile ConflictsDump.xml -dumptype xml -skin xml modified_copper.xml
+  java -jar $SILVER_IDE_HOME/jars/TreesitterConflicts.jar grammar.js ConflictsDump.xml
+  echo "Conflicts added to grammar.js file"
+}
+
+validate_version_number()
+{
+  echo $version_num | grep -e "[[:digit:]].[[:digit:]].[[:digit:]]" > /dev/null
+  if [ $? -ne 0 ]; then
+    echo "${use_red_color}Invalid version number specified: $version_num.${reset_color}"
+    exit 1
+  fi
+  echo Version number $version_num is valid
+}
+
+check_if_parser_already_exists()
+{
+  old_dir=$(pwd)
+  cd ~
+  if [ ! -d $treesitter_parsers_directory/tree-sitter-$lang_name ]; then
+    curl --output /dev/null --silent --head --fail https://www.npmjs.com/package/@$package_scope/tree-sitter-$lang_name
+    if [ $? -eq 0 -a $force_publish_attempt = false -a $publish_parser = true ]; then
+      echo "${use_red_color}A parser for this language name already exists, but you dont have a directory already set up at $treesitter_parsers_directory/tree-sitter-$lang_name. Please either use this parser or use a new language name."
+      echo "If this is what you intended redo the command with the -force option with the appropriate version specified with -version versionum.${reset_color}"
+      exit 1
+    fi
+  fi
+  cd $old_dir # restore directory from before check
+}
+
+
+###################
+# START OF SCRIPT #
+###################
+original_dir=$(pwd)
+
+# Parse Language Name from treesitter command
+at_lang_name=false
+lang_name=""
+for word in $1; do
+  if [ $at_lang_name = true ]; then
+    lang_name=$word
+    break
+  fi
+  if [ $word = "--treesitter-spec" ]; then
+    at_lang_name=true
+  fi
+done
+echo Language Name is $lang_name
+
+
+# The command line arguments
+# the silver command to run
+script_startup
+silver_command=$1
+publish_parser=false
+version_num=""
+version_update_type=""
+package_scope=""
+force_publish_attempt=false
+while [ "$2" != "" ]; do
+  if [ "$2" = "--scope" ]; then
+    package_scope=$2
+  elif [ "$2" = "--publish" ]; then
+    publish_parser=true
+  elif [ "$2" = "--force" ]; then
+    download_only=true
+  elif [ "$2" = "--version" ]; then
+    shift
+    if [ "$2" = "major" -o "$2" = "minor" -o "$2" = "patch" ]; then
+      version_update_type="$2"
+      version_num=""
+    else
+      version_num="$2"
+      version_update_type=""
+      validate_version_number
+    fi
+  fi
+  shift
+done
+
+if [ "$package_scope" = "" ]; then
+    echo "${use_red_color}No package scope was specified with --scope myScope. This is necessary to avoid name conflicts. ${reset_color}"
+    exit 1
+fi
+
+check_if_parser_already_exists
+$silver_command
+modify_grammar_js
+generate_treesitter_parser
