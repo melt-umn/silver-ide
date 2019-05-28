@@ -4,7 +4,7 @@ case `uname` in
 *Darwin*)
   READLINK=greadlink
   if [ ! -f `which greadlink` ]; then
-    echo "Missing greadlink. Please install coreutils:" 
+    echo "Missing greadlink. Please install coreutils:"
     echo -e "\tbrew install coreutils"
     exit 4
   fi
@@ -17,13 +17,13 @@ esac
 # ~/bin/silver-ide should be a link to somewhere, find out where!
 ME=$(${READLINK} -f "${BASH_SOURCE}")
 # Set our home
-export SILVER_IDE_HOME=${ME/scripts\/silver-ide/}
+export SILVER_IDE_HOME=${ME/scripts\/slide/}
 COMPILER_JAR="jars/slide.compiler.jar"
-SILVER_IDE="$SILVER_IDE_HOME$COMPILER_JAR"
+SLIDE="$SILVER_IDE_HOME$COMPILER_JAR"
 
 if [ ! -f "$SILVER_IDE" ]; then
-  echo "Couldn't find the Silver IDE jars to execute, aborting."
+  echo "Couldn't find the Slide jars to execute, aborting."
   exit 2
 fi
 
-java -jar "$SILVER_IDE" "$@"
+java -jar "$SLIDE" "$@"

@@ -32,8 +32,6 @@ generate_atom_package()
   echo "Atom language package generated"
 }
 
-NAME=`echo "$FILE" | cut -d'.' -f1`
-
 original_dir=$(pwd)
 lang_name=$1
 package_scope=$2

@@ -144,9 +144,6 @@ while [ "$2" != "" ]; do
     publish_parser=true
   elif [ "$2" = "--force" ]; then
     force_publish_attempt=true
-  elif [ "$2" = "--lang" ]; then
-    shift
-    lang_name=$2
   elif [ "$2" = "--version" ]; then
     shift
     if [ "$2" = "major" -o "$2" = "minor" -o "$2" = "patch" ]; then

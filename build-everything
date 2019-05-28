@@ -11,23 +11,30 @@ if [ -d generated ]; then
 fi
 
 # Build treesitter conflicts library
+echo "Building Treesitter conflicts jar"
 cd TreesitterConflicts
 javac Main.java
 jar cfm TreesitterConflicts.jar manifest.txt *.class
 mv TreesitterConflicts.jar ../jars/
 cd ..
+echo "Built Treesitter conflicts jar"
 
 # Set up symbolic links
 if [ ! -f ~/bin/gen-treesitter-parser ]; then
   ln -s $(pwd)/scripts/gen-treesitter-parser ~/bin/gen-treesitter-parser
+  echo "Symbolic link for gen-treesitter-parser script set up"
 fi
 
-if [ ! -f ~/bin/silver-ide ]; then
-  ln -s $(pwd)/scripts/silver-ide ~/bin/silver-ide
+if [ ! -f ~/bin/slide ]; then
+  ln -s $(pwd)/scripts/slide ~/bin/slide
+  echo "Symbolic link for slide set up"
 fi
 
 if [ ! -f ~/bin/gen-atom-language-package ]; then
   ln -s $(pwd)/scripts/gen-atom-language-package ~/bin/gen-atom-language-package
+  echo "Symbolic link for gen-atom-language-package script set up"
 fi
 
+echo "Building slide"
 ./build-slide
+echo "Slide built"
