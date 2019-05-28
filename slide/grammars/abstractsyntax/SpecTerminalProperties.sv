@@ -1,4 +1,4 @@
-grammar slide:abstractsyntax;
+grammar abstractsyntax;
 
 {--
  - Modifiers for terminals.

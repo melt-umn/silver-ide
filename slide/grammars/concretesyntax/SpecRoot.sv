@@ -1,4 +1,4 @@
-grammar slide:concretesyntax;
+grammar concretesyntax;
 
 ignore terminal WhiteSpace /[\t\r\n\ ]+/;
 terminal Terminal_kwd 'terminal';

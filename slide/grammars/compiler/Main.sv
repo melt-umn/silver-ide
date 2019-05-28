@@ -1,7 +1,7 @@
-grammar slide:compiler;
+grammar compiler;
 
-import slide:parsers;
-import slide:driver;
+import parsers;
+import driver;
 
 function main
 IOVal<Integer> ::= args::[String] ioin::IO

@@ -1,4 +1,4 @@
-grammar slide:abstractsyntax;
+grammar abstractsyntax;
 
 {-- attributes for language properties. These attributes are specified once
     globally for all grammars.

@@ -18,7 +18,7 @@ esac
 ME=$(${READLINK} -f "${BASH_SOURCE}")
 # Set our home
 export SILVER_IDE_HOME=${ME/scripts\/slide/}
-COMPILER_JAR="jars/slide.compiler.jar"
+COMPILER_JAR="jars/SlideCompiler.jar"
 SLIDE="$SILVER_IDE_HOME$COMPILER_JAR"
 
 if [ ! -f "$SILVER_IDE" ]; then

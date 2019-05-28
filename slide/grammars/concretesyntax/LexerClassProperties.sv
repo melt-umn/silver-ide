@@ -1,4 +1,4 @@
-grammar slide:concretesyntax;
+grammar concretesyntax;
 
 synthesized attribute lexerClassProperties :: SpecLexerClassProperties;
 synthesized attribute lexerClassProperty :: SpecLexerClassProperty;

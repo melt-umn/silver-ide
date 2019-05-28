@@ -1,7 +1,7 @@
-grammar slide:ideinterface;
+grammar ideinterface;
 
 imports silver:extension:ideinterface;
-imports slide:abstractsyntax;
+imports abstractsyntax;
 
 synthesized attribute atomGrammarFile :: String occurs on IDEInterfaceSyntaxRoot;
 autocopy attribute spec :: Spec occurs on IDEInterfaceSyntaxRoot, IDEInterfaceSyntax, IDEInterfaceSyntaxDcl;

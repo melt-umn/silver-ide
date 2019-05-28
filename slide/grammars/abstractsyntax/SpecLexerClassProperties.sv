@@ -1,4 +1,4 @@
-grammar slide:abstractsyntax;
+grammar abstractsyntax;
 
 nonterminal SpecLexerClassProperties with atomMarkupName;
 

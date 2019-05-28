@@ -1,4 +1,4 @@
-grammar slide:driver;
+grammar driver;
 
 nonterminal CmdArgs with cmdRemaining, cmdError;
 

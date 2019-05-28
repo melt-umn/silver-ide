@@ -1,4 +1,4 @@
-grammar slide:concretesyntax;
+grammar concretesyntax;
 
 {--
  - Qualified names of the form 'a:b:c:d...'

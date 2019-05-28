@@ -1,4 +1,4 @@
-grammar slide:concretesyntax;
+grammar concretesyntax;
 
 terminal AtomNameSeparator_t '.';
 -- Top Level Atom Names

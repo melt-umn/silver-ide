@@ -1,4 +1,4 @@
-grammar slide:driver;
+grammar driver;
 
 {--
  - Eat the stream `need` and produce the output stream of (maybe, if found) Specs

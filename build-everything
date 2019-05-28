@@ -36,5 +36,7 @@ if [ ! -f ~/bin/gen-atom-language-package ]; then
 fi
 
 echo "Building slide"
-./build-slide
+cd slide
+./self-compile
+cd ..
 echo "Slide built"

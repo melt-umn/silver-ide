@@ -1,4 +1,4 @@
-grammar slide:ideinterface;
+grammar ideinterface;
 
 import silver:extension:treesitter;
 

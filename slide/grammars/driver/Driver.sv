@@ -1,6 +1,6 @@
-imports slide:concretesyntax;
-imports slide:abstractsyntax;
-imports slide:ideinterface;
+imports concretesyntax;
+imports abstractsyntax;
+imports ideinterface;
 imports silver:extension:ideinterface;
 
 imports core:monad; -- for io

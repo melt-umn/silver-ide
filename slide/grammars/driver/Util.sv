@@ -1,4 +1,4 @@
-grammar slide:driver;
+grammar driver;
 
 {--
  - Determined whether a file name should be considered a Silver source file.

@@ -1,4 +1,4 @@
-grammar slide:abstractsyntax;
+grammar abstractsyntax;
 
 import silver:definition:concrete_syntax:ast;
 import silver:definition:env;

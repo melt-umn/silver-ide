@@ -1,4 +1,4 @@
-grammar slide:concretesyntax;
+grammar concretesyntax;
 
 terminal LanguageProperties_kwd 'language_properties';
 terminal LanguageName_kwd 'language_name';

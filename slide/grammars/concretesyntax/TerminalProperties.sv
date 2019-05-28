@@ -1,4 +1,4 @@
-grammar slide:concretesyntax;
+grammar concretesyntax;
 
 synthesized attribute terminalProperties :: SpecTerminalProperties;
 synthesized attribute terminalProperty :: SpecTerminalProperty;

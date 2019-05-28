@@ -1,4 +1,4 @@
-grammar slide:concretesyntax;
+grammar concretesyntax;
 
 synthesized attribute nonterminalProperties :: SpecNonterminalProperties;
 synthesized attribute nonterminalProperty :: SpecNonterminalProperty;

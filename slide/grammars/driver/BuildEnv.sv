@@ -1,4 +1,4 @@
-grammar slide:driver;
+grammar driver;
 
 nonterminal BuildEnv with silverIDEHome, specPath, defaultSpecPath;
 {-- Find jars, standard library -}
