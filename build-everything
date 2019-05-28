@@ -1,3 +1,4 @@
+#!/bin/bash
 
 set -eu
 
@@ -5,8 +6,26 @@ if [ -d jars ]; then
   mkdir -p jars
 fi
 
+if [ -d generated ]; then
+  mkdir -p generated
+fi
+
 # Build treesitter conflicts library
 cd TreesitterConflicts
 javac Main.java
-jar cfvm TreesitterConflicts.jar manifest.txt *.class
+jar cfm TreesitterConflicts.jar manifest.txt *.class
 mv TreesitterConflicts.jar ../jars/
+cd ..
+
+# Set up symbolic links
+if [ ! -f ~/bin/gen-treesitter-parser ]; then
+  ln -s $(pwd)/scripts/gen-treesitter-parser ~/bin/gen-treesitter-parser
+fi
+
+if [ ! -f ~/bin/silver-ide ]; then
+  ln -s $(pwd)/scripts/silver-ide ~/bin/silver-ide
+fi
+
+if [ ! -f ~/bin/gen-atom-language-package ]; then
+  ln -s $(pwd)/scripts/gen-atom-language-package ~/bin/gen-atom-language-package
+fi

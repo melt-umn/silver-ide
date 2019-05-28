@@ -1,0 +1,52 @@
+#!/bin/bash
+
+atom_packages_directory="silver-syntax-highlighter/atom"
+
+
+generate_atom_package()
+{
+  cd ~
+  echo "Generating atom language package"
+  if [ ! -d $atom_packages_directory ]; then
+    mkdir -p $atom_packages_directory
+  fi
+
+  cd $atom_packages_directory
+  atom_package_dir=$(pwd)/language-$lang_name
+  if [ ! -d language-$lang_name ]; then
+    apm init --language $lang_name
+  fi
+  apm link $atom_package_dir
+  cd language-$lang_name
+  cp $original_dir/$lang_name.cson $atom_package_dir/grammars/
+  if [ ! -d node_modules/tree-sitter-$lang_name ]; then 
+    npm install @$package_scope/tree-sitter-$lang_name
+  else
+    old_version=`npm view tree-sitter-$lang_name version`
+    npm install @$package_scope/tree-sitter-$lang_name
+    new_version=`npm view tree-sitter-$lang_name version`
+    if [ "$old_version" != "$new_version" ]; then
+      echo Package tree-sitter-$lang_name updated from version $old_version to $new_version
+    fi
+  fi
+  echo "Atom language package generated"
+}
+
+NAME=`echo "$FILE" | cut -d'.' -f1`
+
+original_dir=$(pwd)
+lang_name=$1
+package_scope=$2
+if [ "$lang_name" = "" ]; then
+  echo "A language name needs to be provided to the script as the first argument"
+  exit 1
+fi
+if [ "$package_scope" = "" ]; then
+  echo "A package scope needs to be provided to the script as the second argument." 
+  echo "This scope is the scope that your treesitter parser is a part of in the NPM registry."
+  exit 1
+fi
+shift
+shift
+silver-ide $@
+generate_atom_package
