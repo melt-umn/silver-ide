@@ -50,7 +50,7 @@ generate_treesitter_parser()
   else
     mkdir tree-sitter-$lang_name
     cd tree-sitter-$lang_name
-    npm config set scope $package_scope
+    npm init -y --scope=@$package_scope
     npm install --save nan
     npm install --save-dev tree-sitter-cli
   fi
@@ -95,9 +95,10 @@ check_if_parser_already_exists()
   old_dir=$(pwd)
   cd ~
   if [ ! -d $treesitter_parsers_directory/tree-sitter-$lang_name ]; then
-    curl --output /dev/null --silent --head --fail https://www.npmjs.com/package/@$package_scope/tree-sitter-$lang_name
-    if [ $? -eq 0 -a $force_publish_attempt = false -a $publish_parser = true ]; then
-      echo "${use_red_color}A parser for this language name already exists, but you dont have a directory already set up at $treesitter_parsers_directory/tree-sitter-$lang_name. Please either use this parser or use a new language name."
+    http_response=`curl -s -o /dev/null -w "%{http_code}" https://www.npmjs.com/package/@$package_scope/tree-sitter-$lang_name`
+    if [ $http_response -eq 200 -a $force_publish_attempt = false -a $publish_parser = true ]; then
+      echo "${use_red_color}A parser for this language name already exists, but you dont have a directory already set up at $treesitter_parsers_directory/tree-sitter-$lang_name."
+      echo "Please either use this parser or use a new language name."
       echo "If this is what you intended redo the command with the -force option with the appropriate version specified with -version versionum.${reset_color}"
       exit 1
     fi
@@ -137,11 +138,15 @@ package_scope=""
 force_publish_attempt=false
 while [ "$2" != "" ]; do
   if [ "$2" = "--scope" ]; then
+    shift
     package_scope=$2
   elif [ "$2" = "--publish" ]; then
     publish_parser=true
   elif [ "$2" = "--force" ]; then
-    download_only=true
+    force_publish_attempt=true
+  elif [ "$2" = "--lang" ]; then
+    shift
+    lang_name=$2
   elif [ "$2" = "--version" ]; then
     shift
     if [ "$2" = "major" -o "$2" = "minor" -o "$2" = "patch" ]; then
