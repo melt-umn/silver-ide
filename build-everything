@@ -29,3 +29,5 @@ fi
 if [ ! -f ~/bin/gen-atom-language-package ]; then
   ln -s $(pwd)/scripts/gen-atom-language-package ~/bin/gen-atom-language-package
 fi
+
+./build-slide
