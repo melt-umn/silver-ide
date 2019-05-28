@@ -44,7 +44,7 @@ generate_treesitter_parser()
   cd $treesitter_parsers_directory
   if [ -d "tree-sitter-$lang_name" ]; then  
     cd tree-sitter-$lang_name
-    if [ "$version_num" = "" -a "$version_update_type" = "" ]; then
+    if [ $publish_parser = true -a "$version_num" = "" -a "$version_update_type" = "" ]; then
       npm version minor  # update version number
     fi
   else
