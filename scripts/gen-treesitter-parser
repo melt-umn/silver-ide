@@ -24,14 +24,14 @@ esac
     echo "Silver not able to be found. Abort"
     exit 4
   fi
-  if [ ! -f ~/bin/silver-ide ]; then
-    echo "Silver-IDE not able to be found. Abort"
+  if [ ! -f ~/bin/slide ]; then
+    echo "Slide not able to be found. Abort"
     exit 4
   fi
   SILVER_SCRIPT=`${READLINK} ~/bin/silver`
   SILVER_HOME="${SILVER_SCRIPT/support\/bin\/silver/}"
-  SILVER_IDE_SCRIPT=`${READLINK} ~/bin/silver-ide`
-  SILVER_IDE_HOME="${SILVER_IDE_SCRIPT/scripts\/silver-ide/}"
+  SILVER_IDE_SCRIPT=`${READLINK} ~/bin/slide`
+  SILVER_IDE_HOME="${SILVER_IDE_SCRIPT/scripts\/slide/}"
 }
 
 generate_treesitter_parser()
@@ -112,45 +112,32 @@ check_if_parser_already_exists()
 ###################
 original_dir=$(pwd)
 
-# Parse Language Name from treesitter command
-at_lang_name=false
-lang_name=""
-for word in $1; do
-  if [ $at_lang_name = true ]; then
-    lang_name=$word
-    break
-  fi
-  if [ $word = "--treesitter-spec" ]; then
-    at_lang_name=true
-  fi
-done
-echo Language Name is $lang_name
-
-
 # The command line arguments
 # the silver command to run
 script_startup
-silver_command=$1
 publish_parser=false
 version_num=""
 version_update_type=""
 package_scope=""
 force_publish_attempt=false
-while [ "$2" != "" ]; do
-  if [ "$2" = "--scope" ]; then
+while [ "$1" != "" ]; do
+  if [ "$1" = "--scope" ]; then
     shift
-    package_scope=$2
-  elif [ "$2" = "--publish" ]; then
+    package_scope=$1
+  elif [ "$1" = "--lang" ]; then
+    shift
+    lang_name=$1
+  elif [ "$1" = "--publish" ]; then
     publish_parser=true
-  elif [ "$2" = "--force" ]; then
+  elif [ "$1" = "--force" ]; then
     force_publish_attempt=true
-  elif [ "$2" = "--version" ]; then
+  elif [ "$1" = "--version" ]; then
     shift
-    if [ "$2" = "major" -o "$2" = "minor" -o "$2" = "patch" ]; then
-      version_update_type="$2"
+    if [ "$1" = "major" -o "$1" = "minor" -o "$1" = "patch" ]; then
+      version_update_type="$1"
       version_num=""
     else
-      version_num="$2"
+      version_num="$1"
       version_update_type=""
       validate_version_number
     fi
@@ -163,7 +150,10 @@ if [ "$package_scope" = "" ]; then
     exit 1
 fi
 
+if [ "$lang_name" = "" ]; then
+    echo "${use_red_color}No language name was specified with --lang langName. ${reset_color}"
+    exit 1
+fi
 check_if_parser_already_exists
-$silver_command
 modify_grammar_js
 generate_treesitter_parser
