@@ -46,5 +46,5 @@ if [ "$package_scope" = "" ]; then
 fi
 shift
 shift
-silver-ide $@
+slide $@
 generate_atom_package

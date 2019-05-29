@@ -21,7 +21,7 @@ export SILVER_IDE_HOME=${ME/scripts\/slide/}
 COMPILER_JAR="jars/SlideCompiler.jar"
 SLIDE="$SILVER_IDE_HOME$COMPILER_JAR"
 
-if [ ! -f "$SILVER_IDE" ]; then
+if [ ! -f "$SLIDE" ]; then
   echo "Couldn't find the Slide jars to execute, aborting."
   exit 2
 fi
