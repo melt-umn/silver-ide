@@ -230,6 +230,7 @@ top::AtomNameConstantCharacter_c
   }
 | sep::AtomNameSeparator_t first::'escape' 
   {
+    top.unparse = sep.lexeme ++ first.lexeme;
   }
 
 

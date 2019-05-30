@@ -49,7 +49,7 @@ IOVal<Spec> ::=
     -- "slide" is the default file extension
     if null(args.specFileExt) then "slide" else head(args.specFileExt);
   -- IO Step 1: Get the spec files in the directory 
-  local files :: IOVal<[String]> = listSilverIDEFiles(specDirectory, ideFileExt, ioin);
+  local files :: IOVal<[String]> = listSlideFiles(specDirectory, ideFileExt, ioin);
 
   -- IO Step 2: Build the spec directory
   local pr :: IO =

@@ -7,7 +7,7 @@ import silver:definition:env;
 synthesized attribute atomMarkups :: [Pair<String String>];
 
 nonterminal Spec with atomMarkups, langName, treesitterParserName, 
-  fileExtensions;
+  fileExtensions, firstLineRegex;
 
 abstract production consSpec
 top::Spec ::= spec1::Spec spec2::Spec
@@ -15,6 +15,7 @@ top::Spec ::= spec1::Spec spec2::Spec
   top.atomMarkups = spec1.atomMarkups ++ spec2.atomMarkups;
   top.langName = orElse(spec1.langName, spec2.langName);
   top.treesitterParserName = orElse(spec1.treesitterParserName, spec2.treesitterParserName);
+  top.firstLineRegex = orElse(spec1.firstLineRegex, spec2.firstLineRegex);
   top.fileExtensions = spec1.fileExtensions ++ spec2.fileExtensions;
 }
 
@@ -24,6 +25,7 @@ top::Spec ::=
   top.atomMarkups = [];
   top.langName = nothing();
   top.treesitterParserName = nothing();
+  top.firstLineRegex = nothing();
   top.fileExtensions = [];
 }
 
@@ -33,6 +35,7 @@ top::Spec ::=
   top.atomMarkups = [];
   top.langName = nothing();
   top.treesitterParserName = nothing();
+  top.firstLineRegex = nothing();
   top.fileExtensions = [];
 }
 
@@ -48,6 +51,7 @@ top::Spec ::= properties::LanguageProperties
   top.langName = properties.langName;
   top.treesitterParserName = properties.treesitterParserName;
   top.fileExtensions = properties.fileExtensions;
+  top.firstLineRegex = properties.firstLineRegex;
 }
 
 abstract production specTerminal

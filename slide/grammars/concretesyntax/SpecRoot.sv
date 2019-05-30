@@ -21,11 +21,20 @@ terminal IdUppercase_t /[A-Z][A-Za-z0-9\_]*/;
 
 -- given spec files, get a spec root
 synthesized attribute specification :: Spec;
-autocopy attribute grammarName :: String occurs on SpecComponents, SpecComponent;
+-- child specifications. These are used to provide specification for nonterminals
+-- or terminals when they are the children of some nonterminal.
+{--
+synthesized attribute childSpecs :: [Spec];
+inherited attribute parentName :: String;
+--}
+autocopy attribute grammarName :: String;
+
 nonterminal Specification with specification, unparse;
 nonterminal SpecRoot with specification, unparse;
-nonterminal SpecComponents with specification, unparse;
-nonterminal SpecComponent with specification, unparse;
+nonterminal SpecComponents with 
+  grammarName, specification, unparse;
+nonterminal SpecComponent with 
+  grammarName, specification, unparse;
 
 concrete production nilSpecRoot
 top::SpecRoot ::=

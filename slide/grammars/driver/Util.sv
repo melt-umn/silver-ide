@@ -3,17 +3,17 @@ grammar driver;
 {--
  - Determined whether a file name should be considered a Silver source file.
  -}
-function isValidSilverIDEFile
+function isValidSlideFile
 Boolean ::= fileExt::String file::String
 {
   return endsWith(fileExt, file) && !startsWith(".", file);
 }
-function listSilverIDEFiles
+function listSlideFiles
 IOVal<[String]> ::= dir::String  fileExt::String ioin::IO
 {
   local files :: IOVal<[String]> = listContents(dir, ioin);
 
-  return ioval(files.io, filter(isValidSilverIDEFile(fileExt, _), files.iovalue));
+  return ioval(files.io, filter(isValidSlideFile(fileExt, _), files.iovalue));
 }
 
 
