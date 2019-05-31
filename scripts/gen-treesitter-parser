@@ -52,7 +52,7 @@ generate_treesitter_parser()
     cd tree-sitter-$lang_name
     npm init -y --scope=@$package_scope
     npm install --save nan
-    npm install --save-dev tree-sitter-cli
+    npm install --save-dev tree-sitter-cli@0.14.7
   fi
   treesitter_dir=$(pwd)
   cp $original_dir/grammar.js $treesitter_dir/
