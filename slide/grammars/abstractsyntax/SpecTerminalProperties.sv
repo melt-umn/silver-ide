@@ -3,20 +3,26 @@ grammar abstractsyntax;
 {--
  - Modifiers for terminals.
  -}
-nonterminal SpecTerminalProperties with atomMarkupName;
-nonterminal SpecTerminalProperty with atomMarkupName;
+synthesized attribute highlightable :: Boolean;
+
+nonterminal SpecTerminalProperties with 
+  atomMarkupName, highlightable;
+nonterminal SpecTerminalProperty with 
+  atomMarkupName, highlightable;
 
 abstract production consTerminalProp
 top::SpecTerminalProperties ::= h::SpecTerminalProperty  t::SpecTerminalProperties
 {
   -- pick first declaration seen
   top.atomMarkupName = orElse(t.atomMarkupName, h.atomMarkupName);
+  top.highlightable = h.highlightable || t.highlightable;
 }
 
 abstract production nilTerminalProp
 top::SpecTerminalProperties ::=
 {
   top.atomMarkupName = nothing();
+  top.highlightable = false;
 }
 
 
@@ -25,10 +31,17 @@ aspect default production
 top::SpecTerminalProperty ::=
 {
   top.atomMarkupName = nothing();
+  top.highlightable = false;
 }
 
 abstract production atomMarkupNamePropTerminal
 top::SpecTerminalProperty ::= name::String
 {
   top.atomMarkupName = just(name);
+}
+
+abstract production highlightablePropTerminal
+top::SpecTerminalProperty ::=
+{
+  top.highlightable = true;
 }

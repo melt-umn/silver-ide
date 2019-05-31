@@ -19,7 +19,8 @@ synthesized attribute flagAfterAst::CmdArgs;
 
 synthesized attribute searchPath :: [String];
 synthesized attribute specFileExt :: [String];
-attribute searchPath, specFileExt occurs on CmdArgs;
+synthesized attribute treesitterFile :: [String];
+attribute searchPath, specFileExt, treesitterFile occurs on CmdArgs;
 
 {--
  - For defining base, default values for any attributes on CmdArgs
@@ -32,6 +33,7 @@ top::CmdArgs ::= remaining::[String]
 
   top.searchPath = [];
   top.specFileExt = [];
+  top.treesitterFile = [];
 }
 
 {--
@@ -60,8 +62,15 @@ top::CmdArgs ::= s::String rest::CmdArgs
   forwards to rest;
 }
 
+abstract production treesitterFlag
+top::CmdArgs ::= s::String rest::CmdArgs
+{
+  top.treesitterFile = s::forward.treesitterFile;
+  forwards to rest;
+}
+
 {--
- - In the terminology I've just made up, a 'flag' is a cmd line option
+ - As in the terminology used in Silver, a 'flag' is a cmd line option
  - with no parameters.
  -}
 abstract production flag
@@ -73,7 +82,7 @@ top::Flag ::= ast::(CmdArgs ::= CmdArgs)
 }
 
 {--
- - In the terminology I've just made up, an 'option' is a cmd line option
+ - As in the terminology used in Silver, an 'option' is a cmd line option
  - with one, single parameter.
  -}
 abstract production option
@@ -101,16 +110,18 @@ Either<String  Decorated CmdArgs> ::= args::[String]
   -- e.g. -I my/specs is obvious because it refers to a location to include.
   flags <- [
     pair("-I", option(includeFlag)),
-    pair("--ext", option(extFlag))
+    pair("--ext", option(extFlag)),
+    pair("--treesitter", option(treesitterFlag))
   ];
   flagdescs <- [
    -- Always start with \t, name options descriptively in <>, do not end with \n!
     "\t-I <path>   : path to specification files (SPEC_PATH)",
-    "\t--ext <ext> : use the specified file extension when looking for spec files"
+    "\t--ext <ext> : use the specified file extension when looking for spec files",
+    "\t--treesitter <serialized treesitter file> : modify the Treesitter grammar according to the specification"
   ];
 
   local usage :: String =
-    "Usage: silver-ide [options] ide:interface:metadata:file\n\nFlag options:\n" ++ implode("\n", sortBy(stringLte, flagdescs)) ++ "\n";
+    "Usage: slide [options] ide:interface:metadata:file\n\nFlag options:\n" ++ implode("\n", sortBy(stringLte, flagdescs)) ++ "\n";
   
   -- Parse the command line
   production a :: CmdArgs = interpretCmdArgs(flags, args);
@@ -121,6 +132,7 @@ Either<String  Decorated CmdArgs> ::= args::[String]
   errors <-
     if length(a.cmdRemaining) > 1 then ["Unable to interpret arguments: " ++ implode(" ", a.cmdRemaining)]
     else if length(a.specFileExt) > 1 then ["Multiple options given for --ext flag: " ++ implode(" ", a.specFileExt)]
+    else if length(a.treesitterFile) > 1 then ["Multiple options given for --treesitter flag: " ++ implode(" ", a.treesitterFile)]
     else [];
 
   return if !null(errors)

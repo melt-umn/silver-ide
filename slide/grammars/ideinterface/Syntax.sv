@@ -3,6 +3,7 @@ grammar ideinterface;
 import silver:extension:treesitter;
 
 synthesized attribute atomScopes :: String occurs on IDEInterfaceSyntax, IDEInterfaceSyntaxDcl;
+synthesized attribute dclName :: String occurs on IDEInterfaceSyntaxDcl;
 
 aspect production nilIDESyntax
 top::IDEInterfaceSyntax ::=
@@ -23,6 +24,7 @@ top::IDEInterfaceSyntax ::= dcl::IDEInterfaceSyntaxDcl rest::IDEInterfaceSyntax
 aspect production ideSyntaxTerminal
 top::IDEInterfaceSyntaxDcl ::= name::String properties::IDEInterfaceTerminalProperties
 {
+    top.dclName = name;
     local atomMarkupMaybe::Maybe<String> = lookupBy(stringEq, name, top.spec.atomMarkups);
     top.atomScopes = 
       if atomMarkupMaybe.isJust 
@@ -33,6 +35,7 @@ top::IDEInterfaceSyntaxDcl ::= name::String properties::IDEInterfaceTerminalProp
 aspect production ideSyntaxLexerClass
 top::IDEInterfaceSyntaxDcl ::= name::String terms::[String]
 {
+  top.dclName = name;
   local atomMarkupMaybe::Maybe<String> = lookupBy(stringEq, name, top.spec.atomMarkups);
   top.atomScopes = 
     if atomMarkupMaybe.isJust 
@@ -44,7 +47,19 @@ top::IDEInterfaceSyntaxDcl ::= name::String terms::[String]
 aspect production ideSyntaxNonterminal
 top::IDEInterfaceSyntaxDcl ::= name::String subdcls::IDEInterfaceSyntax
 {
-  top.atomScopes = "";
+  top.dclName = name;
+  -- check if any direct declarations were made
+  local atomMarkupMaybe::Maybe<String> = lookupBy(stringEq, name, top.spec.atomMarkups);
+  -- check if it satisfies any wildcards 
+  local atomWildcardMarkup :: [String] = lookupAllMatchingCriteria(top, top.spec.atomWildcardMarkups);
+  top.atomScopes = 
+    if atomMarkupMaybe.isJust
+    -- need 4 spaces
+    then buildAtomScopeText(atomMarkupMaybe.fromJust, name)
+    -- take the first one for now eventually include specificity of wildcards and choose most specific.
+    else if !null(atomWildcardMarkup)
+    then buildAtomScopeText(head(atomWildcardMarkup), name)
+    else "";
 }
 
 function buildAtomScopeText
@@ -53,3 +68,20 @@ String ::= markupName::String terminalName::String
   return s"""'${toTsDeclaration(terminalName)}': '${markupName}' """;
 }
 
+function isTerminal
+Boolean ::= dcl::IDEInterfaceSyntaxDcl
+{
+  return case dcl of
+  | ideSyntaxTerminal(_, _) -> true
+  | _ -> false
+  end;
+}
+
+function isNonterminal
+Boolean ::= dcl::IDEInterfaceSyntaxDcl
+{
+  return case dcl of
+  | ideSyntaxNonterminal(_, _) -> true
+  | _ -> false
+  end;
+}

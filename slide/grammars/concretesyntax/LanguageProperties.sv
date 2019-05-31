@@ -3,17 +3,13 @@ grammar concretesyntax;
 import concretesyntax:regex;
 -- for first line regex property
 
-terminal LanguageProperties_kwd 'language_properties';
-terminal LanguageName_kwd 'language_name';
-terminal FileExtensions_kwd 'file_extensions';
-terminal TreesitterParser_kwd 'treesitter_parser';
-terminal FirstLineRegex_kwd 'first_line_regex';
-
 synthesized attribute langProperties :: LanguageProperties;
 synthesized attribute langProperty :: LanguageProperty;
 
-nonterminal LanguageProperties_c with langProperties, unparse;
-nonterminal LanguagePropertyDcl with langProperty, unparse;
+nonterminal LanguageProperties_c with 
+  langProperties, unparse;
+nonterminal LanguagePropertyDcl with 
+  langProperty, unparse;
 
 concrete production nilLangProperties_c
 top::LanguageProperties_c ::= 
@@ -55,4 +51,11 @@ top::LanguagePropertyDcl ::= 'first_line_regex' '=' r::RegularExpression
 {
   top.langProperty = firstLineRegexProp(r);
   top.unparse = "first_line_regex = " ++ r.regexString;
+}
+
+concrete production globalGrammarSpecDcl
+top::LanguagePropertyDcl ::= dcl::GrammarWideSpecDcl
+{
+  top.langProperty = grammarWideGlobalSpec(dcl.specification);
+  top.unparse = dcl.unparse;
 }

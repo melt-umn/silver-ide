@@ -8,11 +8,14 @@ synthesized attribute langName :: Maybe<String>;
 synthesized attribute treesitterParserName :: Maybe<String>;
 synthesized attribute fileExtensions :: [String];
 synthesized attribute firstLineRegex :: Maybe<RegularExpression>;
+synthesized attribute grammarWideGlobalSpecs :: Spec;
 
 nonterminal LanguageProperties with 
-  treesitterParserName, langName, fileExtensions, firstLineRegex;
+  treesitterParserName, langName, fileExtensions, firstLineRegex,
+  grammarWideGlobalSpecs;
 nonterminal LanguageProperty with 
-  treesitterParserName, langName, fileExtensions, firstLineRegex;
+  treesitterParserName, langName, fileExtensions, firstLineRegex,
+  grammarWideGlobalSpecs;
 
 abstract production consLanguageProp
 top::LanguageProperties ::= h::LanguageProperty t::LanguageProperties
@@ -21,6 +24,7 @@ top::LanguageProperties ::= h::LanguageProperty t::LanguageProperties
   top.treesitterParserName = orElse(h.treesitterParserName, t.treesitterParserName);
   top.firstLineRegex = orElse(h.firstLineRegex, t.firstLineRegex);
   top.fileExtensions = h.fileExtensions ++ t.fileExtensions;
+  top.grammarWideGlobalSpecs = consSpec(h.grammarWideGlobalSpecs, t.grammarWideGlobalSpecs);
 }
 
 abstract production nilLanguageProp
@@ -30,6 +34,7 @@ top::LanguageProperties ::=
   top.treesitterParserName = nothing();
   top.firstLineRegex = nothing();
   top.fileExtensions = [];
+  top.grammarWideGlobalSpecs = nilSpec();
 }
 
 aspect default production
@@ -39,6 +44,7 @@ top::LanguageProperty ::=
   top.treesitterParserName = nothing();
   top.firstLineRegex = nothing();
   top.fileExtensions = [];
+  top.grammarWideGlobalSpecs = nilSpec();
 }
 
 abstract production langNameProp
@@ -63,4 +69,10 @@ abstract production firstLineRegexProp
 top::LanguageProperty ::= r::RegularExpression
 {
   top.firstLineRegex = just(r);
+}
+
+abstract production grammarWideGlobalSpec
+top::LanguageProperty ::= spec::Spec
+{
+  top.grammarWideGlobalSpecs = spec;
 }

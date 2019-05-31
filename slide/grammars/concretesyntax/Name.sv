@@ -8,9 +8,6 @@ synthesized attribute names :: [String];
 nonterminal QName with name, unparse;
 nonterminal Name with name, unparse;
 nonterminal NameList with names, unparse;
-terminal IdLower_t /[a-z][A-Za-z0-9\_]*/;
-terminal IdUpper_t /[A-Z][A-Za-z0-9\_]*/;
-terminal NPMScopedPackageName_t /@[a-z0-9][a-z0-9_\-]*\/[a-z0-9_\-]+/;
 concrete production qNameId
 top::QName ::= id::Name
 {

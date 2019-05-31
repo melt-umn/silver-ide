@@ -1,24 +1,5 @@
 grammar concretesyntax;
 
-ignore terminal WhiteSpace /[\t\r\n\ ]+/;
-terminal Terminal_kwd 'terminal';
-terminal Nonterminal_kwd 'nonterminal';
-terminal Lexer_kwd 'lexer';
-terminal Class_kwd 'class';
-terminal IdeSpec_kwd 'ide_specification';
-terminal For_kwd 'for';
-terminal Global_kwd 'global';
-terminal LCurly_t '{';
-terminal RCurly_t '}';
-terminal LBracket_t '[';
-terminal RBracket_t ']';
-terminal Semicolon_t ';';
-terminal Equal_t '=';
-terminal Comma_t ',';
-terminal Colon_t ':';
-terminal IdLowercase_t /[a-z][A-Za-z0-9\_]*/;
-terminal IdUppercase_t /[A-Z][A-Za-z0-9\_]*/;
-
 -- given spec files, get a spec root
 synthesized attribute specification :: Spec;
 -- child specifications. These are used to provide specification for nonterminals

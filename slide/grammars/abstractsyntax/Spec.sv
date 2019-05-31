@@ -6,8 +6,8 @@ import silver:definition:env;
 -- a list of terminals and there associated atom markup coloring name
 synthesized attribute atomMarkups :: [Pair<String String>];
 
-nonterminal Spec with atomMarkups, langName, treesitterParserName, 
-  fileExtensions, firstLineRegex;
+nonterminal Spec with 
+  atomMarkups, langName, treesitterParserName, fileExtensions, firstLineRegex;
 
 abstract production consSpec
 top::Spec ::= spec1::Spec spec2::Spec
@@ -52,6 +52,9 @@ top::Spec ::= properties::LanguageProperties
   top.treesitterParserName = properties.treesitterParserName;
   top.fileExtensions = properties.fileExtensions;
   top.firstLineRegex = properties.firstLineRegex;
+  
+  top.atomMarkups = properties.grammarWideGlobalSpecs.atomMarkups;
+  top.atomWildcardMarkups = properties.grammarWideGlobalSpecs.atomWildcardMarkups;
 }
 
 abstract production specTerminal
@@ -83,6 +86,7 @@ top::Spec ::= name::String properties::SpecNonterminalProperties
     else
       [];
 }
+
 
 function buildAtomMarkups
 Pair<String String> ::= atomMarkupName::String term::String

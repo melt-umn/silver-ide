@@ -2,6 +2,7 @@ imports concretesyntax;
 imports abstractsyntax;
 imports ideinterface;
 imports silver:extension:ideinterface;
+imports silver:extension:treesitter;
 
 imports core:monad; -- for io
 import silver:reflect; -- necessary otherwise the deserializeAST function is not known
@@ -32,6 +33,20 @@ IOVal<Integer> ::= args::[String] specParser::SpecParser ioIn::IO
     decorate ideInterface with { spec = spec.iovalue; };
 
   local languageName :: String = spec.iovalue.langName.fromJust;
+
+  -- start things to do if treesitter flag is provided
+  {--
+  local treesitter_serialized_spec :: String = head(cmdArgs.treesitterFile);
+  local treesitter_text :: IOVal<String> = readFile(treesitter_serialized_text, metadata_file_text.io)
+
+  local treesitterEither = Either<String TreesitterRoot> =
+    deserialize(treesitter_serialized_spec, treesitter_text);
+  local treesitterRoot :: TreesitterRoot = treesitterEither.fromRight;
+
+  local decTreesitterRoot :: TreesitterRoot =
+    modifyTreesitterGrammar(treesitterRoot
+  -- end things to do if treesitter flag is provided
+  --}
 
   local result::IOMonad<Integer> = do (bindIO, returnIO) {
     if cmdArgParseResult.isLeft then { -- error parsing command line
