@@ -4,13 +4,25 @@ synthesized attribute atomWildcardMarkups :: [Pair<WildcardCriteria String>]
   occurs on Spec;
 
 abstract production specWildcardNonterminal
-top::Spec ::= m::WildcardCriteria properties::SpecNonterminalProperties
+top::Spec ::= wc::WildcardCriteria properties::SpecNonterminalProperties
 {
-  local attribute ntOnlyCriteria :: WildcardCriteria = consWildcardCriteria(nonterminalOnlyWildcardCriteriaElem(), m);
+  local attribute ntOnlyCriteria :: WildcardCriteria = consWildcardCriteria(nonterminalOnlyWildcardCriteriaElem(), wc);
 
   top.atomWildcardMarkups =
     if properties.atomMarkupName.isJust then
       [pair(ntOnlyCriteria, properties.atomMarkupName.fromJust)]
+    else
+      [];
+}
+
+abstract production specWildcardTerminal
+top::Spec ::= wc::WildcardCriteria properties::SpecTerminalProperties
+{
+  local attribute termOnlyCriteria :: WildcardCriteria = consWildcardCriteria(terminalOnlyWildcardCriteriaElem(), wc);
+
+  top.atomWildcardMarkups =
+    if properties.atomMarkupName.isJust then
+      [pair(termOnlyCriteria, properties.atomMarkupName.fromJust)]
     else
       [];
 }

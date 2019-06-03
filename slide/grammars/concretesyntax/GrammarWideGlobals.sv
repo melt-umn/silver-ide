@@ -47,3 +47,34 @@ top::QuickSpec ::= 'color' 'nonterminals' name::AtomName_c excludeDcl::Exclusion
   top.specification = specWildcardNonterminal(wildcardCriteria, ntProperties);
   top.unparse = "color nonterminals " ++ name.unparse;
 }
+
+concrete production colorTerminalsQuickSpec
+top::QuickSpec ::= 'color' 'terminals' name::AtomName_c
+{
+  local attribute wildcardCriteria :: WildcardCriteria = 
+    consWildcardCriteria(grammarWildcardCriteriaElem(top.grammarName), nilWildcardCriteria());
+
+  local attribute termProperties :: SpecTerminalProperties =
+    consTerminalProp(atomMarkupNamePropTerminal(name.unparse), nilTerminalProp());
+  
+  top.specification = specWildcardTerminal(wildcardCriteria, termProperties);
+  top.unparse = "color terminals " ++ name.unparse;
+}
+
+
+concrete production colorTerminalsQuickSpecWithExclude
+top::QuickSpec ::= 'color' 'terminals' name::AtomName_c excludeDcl::ExclusionDeclaration
+{
+  local attribute wildcardCriteria :: WildcardCriteria = 
+    consWildcardCriteria(
+      grammarWildcardCriteriaElem(top.grammarName), 
+    consWildcardCriteria(
+      excludeRulesWildcardCriteriaElem(excludeDcl.excludeRules),
+    nilWildcardCriteria()));
+
+  local attribute termProperties :: SpecTerminalProperties =
+    consTerminalProp(atomMarkupNamePropTerminal(name.unparse), nilTerminalProp());
+  
+  top.specification = specWildcardTerminal(wildcardCriteria, termProperties);
+  top.unparse = "color terminals " ++ name.unparse;
+}

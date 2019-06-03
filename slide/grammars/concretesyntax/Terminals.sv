@@ -12,6 +12,7 @@ terminal FirstLineRegex_kwd 'first_line_regex';
 {-- Quick Spec Terminals --}
 terminal Color_kwd 'color';
 terminal Nonterminals_kwd 'nonterminals';
+terminal Terminals_kwd 'terminals';
 terminal Grammar_kwd 'grammar';
 
 {-- Name Terminals --}
@@ -42,6 +43,9 @@ terminal Colon_t ':';
 {-- Terminal Property Terminals --}
 terminal AtomMarkupName_kwd 'atomMarkupName';
 terminal Highligtable_kwd 'highlightable';
+
+{-- Wildcard Terminals --}
+terminal WildcardMatchAll_t '*';
 
 {-- Exclude Rule Terminals --}
 terminal Excluding_kwd 'excluding';
