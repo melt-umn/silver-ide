@@ -2,6 +2,9 @@ grammar concretesyntax;
 
 --autocopy attribute grammarName :: String;
 
+-- a flag indicating that this quick spec is for the specified grammar name
+-- and all the subgrammars below it
+inherited attribute subGrammarsSpecToo :: Boolean;
 
 nonterminal GrammarWideSpecDcl
   with unparse, specification;
@@ -10,19 +13,33 @@ concrete production grammarWideSpecDcl
 top::GrammarWideSpecDcl ::= 'grammar' gramName::QName spec::QuickSpec
 {
   spec.grammarName = gramName.name;
+  spec.subGrammarsSpecToo = false;
   top.unparse = "grammar " ++ gramName.unparse ++ spec.unparse;
   top.specification = spec.specification;
 }
 
+concrete production grammarsWideSpecDcl
+top::GrammarWideSpecDcl ::= 'grammars' 'under' gramName::QName spec::QuickSpec
+{
+  spec.grammarName = gramName.name;
+  spec.subGrammarsSpecToo = true;
+  top.unparse = "grammars under " ++ gramName.unparse ++ spec.unparse;
+  top.specification = spec.specification;
+}
 
 nonterminal QuickSpec
-  with unparse, specification, grammarName;
+  with unparse, specification, grammarName, subGrammarsSpecToo;
 
 concrete production colorNonterminalsQuickSpec
 top::QuickSpec ::= 'color' 'nonterminals' name::AtomName_c
 {
+  local attribute grammarWcCriteriaElem :: WildcardCriteriaElement =
+    if top.subGrammarsSpecToo
+    then grammarsUnderWildcardCriteriaElem(top.grammarName)
+    else grammarWildcardCriteriaElem(top.grammarName);
+
   local attribute wildcardCriteria :: WildcardCriteria = 
-    consWildcardCriteria(grammarWildcardCriteriaElem(top.grammarName), nilWildcardCriteria());
+    consWildcardCriteria(grammarWcCriteriaElem, nilWildcardCriteria());
 
   local attribute ntProperties :: SpecNonterminalProperties =
     consNonterminalProp(atomMarkupNamePropNonterminal(name.unparse), nilNonterminalProp());
@@ -34,9 +51,14 @@ top::QuickSpec ::= 'color' 'nonterminals' name::AtomName_c
 concrete production colorNonterminalQuickSpecWithExclude
 top::QuickSpec ::= 'color' 'nonterminals' name::AtomName_c excludeDcl::ExclusionDeclaration
 {
+  local attribute grammarWcCriteriaElem :: WildcardCriteriaElement =
+    if top.subGrammarsSpecToo
+    then grammarsUnderWildcardCriteriaElem(top.grammarName)
+    else grammarWildcardCriteriaElem(top.grammarName);
+
   local attribute wildcardCriteria :: WildcardCriteria = 
     consWildcardCriteria(
-      grammarWildcardCriteriaElem(top.grammarName), 
+      grammarWcCriteriaElem,
     consWildcardCriteria(
       excludeRulesWildcardCriteriaElem(excludeDcl.excludeRules),
     nilWildcardCriteria()));
@@ -51,8 +73,13 @@ top::QuickSpec ::= 'color' 'nonterminals' name::AtomName_c excludeDcl::Exclusion
 concrete production colorTerminalsQuickSpec
 top::QuickSpec ::= 'color' 'terminals' name::AtomName_c
 {
+  local attribute grammarWcCriteriaElem :: WildcardCriteriaElement =
+    if top.subGrammarsSpecToo
+    then grammarsUnderWildcardCriteriaElem(top.grammarName)
+    else grammarWildcardCriteriaElem(top.grammarName);
+
   local attribute wildcardCriteria :: WildcardCriteria = 
-    consWildcardCriteria(grammarWildcardCriteriaElem(top.grammarName), nilWildcardCriteria());
+    consWildcardCriteria(grammarWcCriteriaElem, nilWildcardCriteria());
 
   local attribute termProperties :: SpecTerminalProperties =
     consTerminalProp(atomMarkupNamePropTerminal(name.unparse), nilTerminalProp());
@@ -65,9 +92,14 @@ top::QuickSpec ::= 'color' 'terminals' name::AtomName_c
 concrete production colorTerminalsQuickSpecWithExclude
 top::QuickSpec ::= 'color' 'terminals' name::AtomName_c excludeDcl::ExclusionDeclaration
 {
+  local attribute grammarWcCriteriaElem :: WildcardCriteriaElement =
+    if top.subGrammarsSpecToo
+    then grammarsUnderWildcardCriteriaElem(top.grammarName)
+    else grammarWildcardCriteriaElem(top.grammarName);
+
   local attribute wildcardCriteria :: WildcardCriteria = 
     consWildcardCriteria(
-      grammarWildcardCriteriaElem(top.grammarName), 
+      grammarWcCriteriaElem,
     consWildcardCriteria(
       excludeRulesWildcardCriteriaElem(excludeDcl.excludeRules),
     nilWildcardCriteria()));

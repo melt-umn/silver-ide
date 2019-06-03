@@ -4,9 +4,11 @@ Boolean ::= dcl::IDEInterfaceSyntaxDcl wc::WildcardCriteria
 {
   local attribute grammarName :: String = substring(0, lastIndexOf(":", dcl.dclName), dcl.dclName);
   local attribute grammarMatch :: Boolean =
-    if wc.requiredGrammar.isJust
+    if wc.requiredGrammar.isJust -- check if it needs to be and is a direct match
     then stringEq(wc.requiredGrammar.fromJust, grammarName)
-    else true;
+    else if wc.requiredUnderGrammar.isJust -- check if it needs to be and is in this grammar or a subgrammar
+    then startsWith(wc.requiredUnderGrammar.fromJust, grammarName)
+    else true; -- otherwise no grammar requirements are imposed so this trivially matches
 
   local attribute correctDclType :: Boolean =
     (wc.mustBeTerminal && isTerminal(dcl)) -- it must be a terminal and is

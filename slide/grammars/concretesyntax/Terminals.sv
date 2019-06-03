@@ -14,6 +14,8 @@ terminal Color_kwd 'color';
 terminal Nonterminals_kwd 'nonterminals';
 terminal Terminals_kwd 'terminals';
 terminal Grammar_kwd 'grammar';
+terminal Grammars_kwd 'grammars';
+terminal Under_kwd 'under';
 
 {-- Name Terminals --}
 terminal IdLower_t /[a-z][A-Za-z0-9\_]*/;
