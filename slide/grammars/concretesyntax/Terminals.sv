@@ -1,4 +1,7 @@
 
+{-- Ignore Terminals --}
+ignore terminal WhiteSpace /[\t\r\n\ ]+/;
+ignore terminal LineComment /([\-][\-].*)/;
 {-- Language Properties Keywords --}
 terminal LanguageProperties_kwd 'language_properties';
 terminal LanguageName_kwd 'language_name';
@@ -17,7 +20,6 @@ terminal IdUpper_t /[A-Z][A-Za-z0-9\_]*/;
 terminal NPMScopedPackageName_t /@[a-z0-9][a-z0-9_\-]*\/[a-z0-9_\-]+/;
 
 {-- Spec File Terminals --}
-ignore terminal WhiteSpace /[\t\r\n\ ]+/;
 terminal Terminal_kwd 'terminal';
 terminal Nonterminal_kwd 'nonterminal';
 terminal Lexer_kwd 'lexer';
@@ -40,3 +42,6 @@ terminal Colon_t ':';
 {-- Terminal Property Terminals --}
 terminal AtomMarkupName_kwd 'atomMarkupName';
 terminal Highligtable_kwd 'highlightable';
+
+{-- Exclude Rule Terminals --}
+terminal Excluding_kwd 'excluding';

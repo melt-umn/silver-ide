@@ -30,3 +30,20 @@ top::QuickSpec ::= 'color' 'nonterminals' name::AtomName_c
   top.specification = specWildcardNonterminal(wildcardCriteria, ntProperties);
   top.unparse = "color nonterminals " ++ name.unparse;
 }
+
+concrete production colorNonterminalQuickSpecWithExclude
+top::QuickSpec ::= 'color' 'nonterminals' name::AtomName_c excludeDcl::ExclusionDeclaration
+{
+  local attribute wildcardCriteria :: WildcardCriteria = 
+    consWildcardCriteria(
+      grammarWildcardCriteriaElem(top.grammarName), 
+    consWildcardCriteria(
+      excludeRulesWildcardCriteriaElem(excludeDcl.excludeRules),
+    nilWildcardCriteria()));
+
+  local attribute ntProperties :: SpecNonterminalProperties =
+    consNonterminalProp(atomMarkupNamePropNonterminal(name.unparse), nilNonterminalProp());
+
+  top.specification = specWildcardNonterminal(wildcardCriteria, ntProperties);
+  top.unparse = "color nonterminals " ++ name.unparse;
+}

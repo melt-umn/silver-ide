@@ -13,7 +13,9 @@ Boolean ::= dcl::IDEInterfaceSyntaxDcl wc::WildcardCriteria
     || (wc.mustBeNonterminal && isNonterminal(dcl)) -- or it must be a terminal and is
     || (!wc.mustBeTerminal && !wc.mustBeNonterminal); -- or it does not need to be a terminal or nonterminal
 
-    return correctDclType && grammarMatch;
+  local attribute isNotExcluded :: Boolean = !shouldBeExcluded(dcl, wc.excludeRules);
+
+  return correctDclType && grammarMatch && isNotExcluded;
 }
 
 function lookupAllMatchingCriteria
@@ -28,3 +30,17 @@ function lookupAllMatchingCriteria
     else lookupAllMatchingCriteria(dcl, tail(assocList));
 }
 
+function shouldBeExcluded
+Boolean ::= dcl::IDEInterfaceSyntaxDcl rules::ExcludeRules 
+{
+  local attribute tests :: [(Boolean ::= IDEInterfaceSyntaxDcl)] = rules.excludeTests;
+  -- if any of these tests return true the dcl should be excluded
+  local attribute results :: [Boolean] = map(runExcludeTest(dcl, _), tests);
+  return any(results);
+}
+
+function runExcludeTest
+Boolean ::= dcl::IDEInterfaceSyntaxDcl test::(Boolean ::= IDEInterfaceSyntaxDcl) 
+{
+  return test(dcl);
+}
