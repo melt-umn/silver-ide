@@ -10,7 +10,7 @@ This example shows you how to use Treesitter highlighting for ableC and set of e
   - ableC-regex-lib (check out the `feature/ide-support` branch)
   -  ableC-algebraic-data-types (check out the `feature/ide-support` branch)
   -  ableC-regex-pattern-matching (This does not have any new terminals/nonterminals so there is no ide specification. It does not have the `feature/ide-support` branch)
-5. [Create an account on NPM](https://www.npmjs.com/signup) if you do not have one already. Either way make sure you know your username and password.
+5. [Create an account on NPM](https://www.npmjs.com/signup) if you do not have one already. Either way make sure you know your username and password. Go into the Makefile and on the first few lines put your username where it says `NPM_USERNAME=YOUR_NAME_HERE`
 
 Once you have all the previous steps, you are ready to test out the example. To do this go into the new `ableC-sample-projects/parallel_tree_search` directory.
 
