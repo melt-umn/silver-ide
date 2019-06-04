@@ -2,11 +2,11 @@
 
 set -eu
 
-if [ -d jars ]; then
+if [ ! -d jars ]; then
   mkdir -p jars
 fi
 
-if [ -d generated ]; then
+if [ ! -d generated ]; then
   mkdir -p generated
 fi
 
