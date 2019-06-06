@@ -92,6 +92,11 @@ terminal AtomNameDouble_t 'double';
 terminal AtomNameTriple_t 'triple';
 terminal AtomNameOther_StringQuoted_t 'other';
 
+-- differentiation used in atom markup names to differentiate host and
+-- extension keywords
+terminal AtomNameHost_t 'host';
+terminal AtomNameExtension_t 'extension';
+
 nonterminal AtomName_c with unparse, location;
 nonterminal AtomNameComment_c with unparse, location;
 nonterminal AtomNameConstant_c with unparse, location; 
@@ -304,6 +309,7 @@ top::AtomNameInvalid_c
     top.unparse = sep.lexeme ++ first.lexeme;
   }
 
+nonterminal AtomNameOther_Keyword_c with unparse, location;
 concrete productions
 top::AtomNameKeyword_c
 |
@@ -318,7 +324,23 @@ top::AtomNameKeyword_c
   {
     top.unparse = sep.lexeme ++ first.lexeme;
   }
-| sep::AtomNameSeparator_t first::AtomNameOther_Keyword_t
+| sep::AtomNameSeparator_t first::AtomNameOther_Keyword_t rest::AtomNameOther_Keyword_c
+  {
+    top.unparse = sep.lexeme ++ first.lexeme ++ rest.unparse;
+  }
+
+{-- This production is used in demo specifications --}
+concrete productions
+top::AtomNameOther_Keyword_c
+|
+  {
+  top.unparse = "";
+  }
+| sep::AtomNameSeparator_t first::'host'
+  {
+    top.unparse = sep.lexeme ++ first.lexeme;
+  }
+| sep::AtomNameSeparator_t first::'extension'
   {
     top.unparse = sep.lexeme ++ first.lexeme;
   }
@@ -390,17 +412,42 @@ top::AtomNameMarkupList_c
     top.unparse = sep.lexeme ++ first.lexeme;
   }
 
+nonterminal AtomNameStorageType_c with unparse, location;
+nonterminal AtomNameStorageModifier_c with unparse, location;
+
 concrete productions
 top::AtomNameStorage_c
 |
   {
     top.unparse = "";
   }
-| sep::AtomNameSeparator_t first::AtomNameType_Storage_t
+| sep::AtomNameSeparator_t first::AtomNameType_Storage_t rest::AtomNameStorageType_c
+  {
+    top.unparse = sep.lexeme ++ first.lexeme ++ rest.unparse;
+  }
+| sep::AtomNameSeparator_t first::'modifier' rest::AtomNameStorageModifier_c
+  {
+    top.unparse = sep.lexeme ++ first.lexeme ++ rest.unparse;
+  }
+
+concrete productions
+top::AtomNameStorageType_c
+|
+  {
+    top.unparse = "";
+  }
+| sep::AtomNameSeparator_t first::'host'
   {
     top.unparse = sep.lexeme ++ first.lexeme;
   }
-| sep::AtomNameSeparator_t first::'modifier'
+
+concrete productions
+top::AtomNameStorageModifier_c
+|
+  {
+    top.unparse = "";
+  }
+| sep::AtomNameSeparator_t first::'host'
   {
     top.unparse = sep.lexeme ++ first.lexeme;
   }
