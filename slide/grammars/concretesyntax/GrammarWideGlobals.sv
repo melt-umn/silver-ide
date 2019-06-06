@@ -31,32 +31,32 @@ nonterminal QuickSpec
   with unparse, specification, grammarName, subGrammarsSpecToo;
 
 concrete production colorNonterminalsQuickSpec
-top::QuickSpec ::= 'color' 'nonterminals' name::AtomName_c
+top::QuickSpec ::= 'color' 'nonterminals' name::ColorName
 {
   local attribute grammarWcCriteriaElem :: WildcardCriteriaElement =
     if top.subGrammarsSpecToo
     then grammarsUnderWildcardCriteriaElem(top.grammarName)
     else grammarWildcardCriteriaElem(top.grammarName);
 
-  local attribute wildcardCriteria :: WildcardCriteria = 
+  local attribute wildcardCriteria :: WildcardCriteria =
     consWildcardCriteria(grammarWcCriteriaElem, nilWildcardCriteria());
 
   local attribute ntProperties :: SpecNonterminalProperties =
-    consNonterminalProp(atomMarkupNamePropNonterminal(name.unparse), nilNonterminalProp());
+    consNonterminalProp(atomMarkupNamePropNonterminal(name.atomColorString), nilNonterminalProp());
 
   top.specification = specWildcardNonterminal(wildcardCriteria, ntProperties);
   top.unparse = "color nonterminals " ++ name.unparse;
 }
 
 concrete production colorNonterminalQuickSpecWithExclude
-top::QuickSpec ::= 'color' 'nonterminals' name::AtomName_c excludeDcl::ExclusionDeclaration
+top::QuickSpec ::= 'color' 'nonterminals' name::ColorName excludeDcl::ExclusionDeclaration
 {
   local attribute grammarWcCriteriaElem :: WildcardCriteriaElement =
     if top.subGrammarsSpecToo
     then grammarsUnderWildcardCriteriaElem(top.grammarName)
     else grammarWildcardCriteriaElem(top.grammarName);
 
-  local attribute wildcardCriteria :: WildcardCriteria = 
+  local attribute wildcardCriteria :: WildcardCriteria =
     consWildcardCriteria(
       grammarWcCriteriaElem,
     consWildcardCriteria(
@@ -64,40 +64,40 @@ top::QuickSpec ::= 'color' 'nonterminals' name::AtomName_c excludeDcl::Exclusion
     nilWildcardCriteria()));
 
   local attribute ntProperties :: SpecNonterminalProperties =
-    consNonterminalProp(atomMarkupNamePropNonterminal(name.unparse), nilNonterminalProp());
+    consNonterminalProp(atomMarkupNamePropNonterminal(name.atomColorString), nilNonterminalProp());
 
   top.specification = specWildcardNonterminal(wildcardCriteria, ntProperties);
   top.unparse = "color nonterminals " ++ name.unparse;
 }
 
 concrete production colorTerminalsQuickSpec
-top::QuickSpec ::= 'color' 'terminals' name::AtomName_c
+top::QuickSpec ::= 'color' 'terminals' name::ColorName
 {
   local attribute grammarWcCriteriaElem :: WildcardCriteriaElement =
     if top.subGrammarsSpecToo
     then grammarsUnderWildcardCriteriaElem(top.grammarName)
     else grammarWildcardCriteriaElem(top.grammarName);
 
-  local attribute wildcardCriteria :: WildcardCriteria = 
+  local attribute wildcardCriteria :: WildcardCriteria =
     consWildcardCriteria(grammarWcCriteriaElem, nilWildcardCriteria());
 
   local attribute termProperties :: SpecTerminalProperties =
-    consTerminalProp(atomMarkupNamePropTerminal(name.unparse), nilTerminalProp());
-  
+    consTerminalProp(atomMarkupNamePropTerminal(name.atomColorString), nilTerminalProp());
+
   top.specification = specWildcardTerminal(wildcardCriteria, termProperties);
   top.unparse = "color terminals " ++ name.unparse;
 }
 
 
 concrete production colorTerminalsQuickSpecWithExclude
-top::QuickSpec ::= 'color' 'terminals' name::AtomName_c excludeDcl::ExclusionDeclaration
+top::QuickSpec ::= 'color' 'terminals' name::ColorName excludeDcl::ExclusionDeclaration
 {
   local attribute grammarWcCriteriaElem :: WildcardCriteriaElement =
     if top.subGrammarsSpecToo
     then grammarsUnderWildcardCriteriaElem(top.grammarName)
     else grammarWildcardCriteriaElem(top.grammarName);
 
-  local attribute wildcardCriteria :: WildcardCriteria = 
+  local attribute wildcardCriteria :: WildcardCriteria =
     consWildcardCriteria(
       grammarWcCriteriaElem,
     consWildcardCriteria(
@@ -105,8 +105,8 @@ top::QuickSpec ::= 'color' 'terminals' name::AtomName_c excludeDcl::ExclusionDec
     nilWildcardCriteria()));
 
   local attribute termProperties :: SpecTerminalProperties =
-    consTerminalProp(atomMarkupNamePropTerminal(name.unparse), nilTerminalProp());
-  
+    consTerminalProp(atomMarkupNamePropTerminal(name.atomColorString), nilTerminalProp());
+
   top.specification = specWildcardTerminal(wildcardCriteria, termProperties);
   top.unparse = "color terminals " ++ name.unparse;
 }

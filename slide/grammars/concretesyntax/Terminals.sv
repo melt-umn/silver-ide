@@ -51,3 +51,12 @@ terminal WildcardMatchAll_t '*';
 
 {-- Exclude Rule Terminals --}
 terminal Excluding_kwd 'excluding';
+
+{-- Color Terminals --}
+terminal Black_kwd 'black';
+terminal White_kwd 'white';
+terminal Green_kwd 'green';
+terminal Blue_kwd 'blue';
+terminal Red_kwd 'red';
+terminal Purple_kwd 'purple';
+terminal DarkGreen_kwd 'dark-green';
