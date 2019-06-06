@@ -53,7 +53,7 @@ top::Spec ::= properties::LanguageProperties
   top.fileExtensions = properties.fileExtensions;
   top.firstLineRegex = properties.firstLineRegex;
   
-  top.atomMarkups = properties.grammarWideGlobalSpecs.atomMarkups;
+  top.atomMarkups = properties.grammarWideGlobalSpecs.atomMarkups ++ properties.prefixSpecs.atomMarkups;
   top.atomWildcardMarkups = properties.grammarWideGlobalSpecs.atomWildcardMarkups;
 }
 
@@ -79,6 +79,16 @@ top::Spec ::= name::String properties::SpecLexerClassProperties
 
 abstract production specNonterminal
 top::Spec ::= name::String properties::SpecNonterminalProperties
+{
+  top.atomMarkups =
+    if properties.atomMarkupName.isJust then
+      [pair(name, properties.atomMarkupName.fromJust)]
+    else
+      [];
+}
+
+abstract production specPrefix
+top::Spec ::= name::String properties::SpecPrefixProperties
 {
   top.atomMarkups =
     if properties.atomMarkupName.isJust then

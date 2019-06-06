@@ -32,6 +32,9 @@ terminal For_kwd 'for';
 {-- Global Spec Terminals --}
 terminal Global_kwd 'global';
 
+{-- Prefix Spec Terminals --}
+terminal Prefix_kwd 'prefix';
+
 {-- Other Terminals --}
 terminal LCurly_t '{';
 terminal RCurly_t '}';
@@ -41,6 +44,7 @@ terminal Semicolon_t ';';
 terminal Equal_t '=';
 terminal Comma_t ',';
 terminal Colon_t ':';
+terminal DoubleQuote_t '"';
 
 {-- Terminal Property Terminals --}
 terminal AtomMarkupName_kwd 'atomMarkupName';

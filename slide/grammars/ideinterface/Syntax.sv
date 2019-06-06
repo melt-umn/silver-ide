@@ -25,9 +25,17 @@ aspect production ideSyntaxTerminal
 top::IDEInterfaceSyntaxDcl ::= name::String properties::IDEInterfaceTerminalProperties
 {
     top.dclName = name;
+    local prefixMarkup :: Maybe<String> =
+      if properties.isPrefix then
+        lookupBy(stringEq, properties.regexString, top.spec.atomMarkups)
+      else
+        nothing();
+
     local atomMarkupMaybe::Maybe<String> = lookupBy(stringEq, name, top.spec.atomMarkups);
     top.atomScopes = 
-      if atomMarkupMaybe.isJust 
+      if prefixMarkup.isJust 
+      then buildAtomScopeText(prefixMarkup.fromJust, name)
+      else if atomMarkupMaybe.isJust 
       then buildAtomScopeText(atomMarkupMaybe.fromJust, name)
       else "";
 }

@@ -59,3 +59,13 @@ top::LanguagePropertyDcl ::= dcl::GrammarWideSpecDcl
   top.langProperty = grammarWideGlobalSpec(dcl.specification);
   top.unparse = dcl.unparse;
 }
+
+{-- the prefix separator is given in the IDE interface and 
+    terminals have an attribute isPrefix which specifies if they are a prefix
+--}
+concrete production prefixSpecDcl
+top::LanguagePropertyDcl ::= dcl::PrefixSpecDcl
+{
+  top.langProperty = prefixSpec(dcl.specification);
+  top.unparse = dcl.unparse;
+}
