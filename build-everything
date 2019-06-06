@@ -35,6 +35,13 @@ if [ ! -f ~/bin/gen-atom-language-package ]; then
   echo "Symbolic link for gen-atom-language-package script set up"
 fi
 
+# set up a symbolic link so Atom finds our highlighting theme
+if [ ! -f ~/.atom/packages/melt-atom-light-syntax ]; then
+  echo "Adding MELT light demo theme to Atom packages"
+  ln -s $(pwd)/melt-atom-light-syntax ~/.atom/packages/melt-atom-light-syntax
+  echo "Added MELT light demo theme to Atom packages"
+fi
+
 echo "Building slide"
 cd slide
 ./self-compile
