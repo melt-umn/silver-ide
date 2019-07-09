@@ -1,13 +1,34 @@
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+/**
+ * @author      Joseph Blanchard <blanc317@umn.edu>
+ * @version     1.0
+ * @since       1.0
+ */
+ /* TODO: construct a new method that processes the entire XML so Main does not have to know about the
+    inner workings of the XML dump and only needs to call that method. That method would utilize all
+    the other methods already written here.
+ */
 public class XMLObjectCreator {
+  /**
+  * Process a gramamr node in the XML and creates the associated Gramamr object.
+  * @param e the XML element representing the grammar.
+  * @return the grammar represented by the given XML object.
+  * @since 1.0
+  */
   public static Grammar processGrammarNode(Element e) {
     int tag = Integer.parseInt(e.getAttribute("tag"));
     String id = e.getAttribute("id");
     return new Grammar(tag, id);
   }
 
+  /**
+  * Process a terminal node in the XML and creates the associated Terminal object.
+  * @param e the XML element representing the terminal.
+  * @return the terminal represented by the given XML object.
+  * @since 1.0
+  */
   public static Terminal processTerminalNode(Element e) {
     e.normalize();
     int tag = Integer.parseInt(e.getAttribute("tag"));
@@ -22,6 +43,12 @@ public class XMLObjectCreator {
     return new Terminal(tag, id, displayName, grammarTag);
   }
 
+  /**
+  * Process a nonterminal node in the XML and creates the associated Nonterminal object.
+  * @param e the XML element representing the nonterminal.
+  * @return the nonterminal represented by the given XML object.
+  * @since 1.0
+  */
   public static Nonterminal processNonterminalNode(Element e) {
     e.normalize();
     int tag = Integer.parseInt(e.getAttribute("tag"));
@@ -36,6 +63,12 @@ public class XMLObjectCreator {
     return new Nonterminal(tag, id, displayName, grammarTag);
   }
 
+  /**
+  * Process a production node in the XML and creates the associated Production object.
+  * @param e the XML element representing the production.
+  * @return the production represented by the given XML object.
+  * @since 1.0
+  */
   public static Production processProductionNode(Element e) {
     e.normalize();
     int tag = Integer.parseInt(e.getAttribute("tag"));
@@ -60,11 +93,17 @@ public class XMLObjectCreator {
           p.addRHSSymbolTag(rhsTag);
         }
         curNode = curNode.getNextSibling();
-      } 
+      }
     }
     return p;
   }
-  
+
+  /**
+  * Process a first set node in the XML and creates the associated FirstSet object.
+  * @param e the XML element representing the firsts et.
+  * @return the first set represented by the given XML object.
+  * @since 1.0
+  */
   public static FirstSet processFirstSet(Element e) {
     int ntTag = Integer.parseInt(e.getAttribute("of"));
     FirstSet fs = new FirstSet(ntTag);
@@ -80,6 +119,12 @@ public class XMLObjectCreator {
     return fs;
   }
 
+  /**
+  * Process all the context sets node in the XML and creates the associated objects and add them to the grammars.
+  * @param e the XML element representing the context sets.
+  * @param g the grammars to add the context sets to.
+  * @since 1.0
+  */
   public static void processContextSets(Element e, Grammars g) {
     Node curContextSet = e.getFirstChild();
     while (curContextSet != null) {
@@ -90,14 +135,20 @@ public class XMLObjectCreator {
           FirstSet fs = XMLObjectCreator.processFirstSet(contextSetElem);
           g.addFirstSet(fs);
         }
-        // skip FirstNT not needed rn
-        // skip Follow sets not needed rn
+        // skip FirstNT not needed right now
+        // skip Follow sets not needed now
         // skip Nullable not needed for this application
       }
       curContextSet = curContextSet.getNextSibling();
     }
   }
 
+  /**
+  * Process a DFA item node in the XML and creates the associated DFA_Item object.
+  * @param e the XML element representing the DFA item.
+  * @return the DFA item represented by the given XML object.
+  * @since 1.0
+  */
   public static DFA_Item processDFA_Item(Element e) {
     int productionTag = Integer.parseInt(e.getAttribute("production"));
     int curPosition = Integer.parseInt(e.getAttribute("marker"));
@@ -116,6 +167,12 @@ public class XMLObjectCreator {
     return item;
   }
 
+  /**
+  * Process a DFA state node in the XML and creates the associated DFA_State object.
+  * @param e the XML element representing the DFA state.
+  * @return the DFa state represented by the given XML object.
+  * @since 1.0
+  */
   public static DFA_State processDFA_State(Element e) {
     int state_num = Integer.parseInt(e.getAttribute("id"));
     DFA_State state = new DFA_State(state_num);
@@ -136,13 +193,19 @@ public class XMLObjectCreator {
     return state;
   }
 
+  /**
+  * Process an LALR DFA node in the XML and creates the associated LALR DFA object.
+  * @param e the XML element representing the LALR DFA.
+  * @return the LALR DFA represented by the given XML object.
+  * @since 1.0
+  */
   public static LALR_DFA processLALR_DFA(Element e) {
     LALR_DFA dfa = new LALR_DFA();
     Node curState = e.getFirstChild();
     while (curState != null) {
       if (curState.getNodeType() == Node.ELEMENT_NODE) {
         Element curStateElem = (Element) curState;
-        DFA_State state = XMLObjectCreator.processDFA_State(curStateElem);     
+        DFA_State state = XMLObjectCreator.processDFA_State(curStateElem);
         dfa.addState(state);
       }
       curState = curState.getNextSibling();
@@ -150,6 +213,12 @@ public class XMLObjectCreator {
     return dfa;
   }
 
+  /**
+  * Process a parse cell node in the XML and creates the associated ParseCell object.
+  * @param e the XML element representing the parse cell.
+  * @return the parse cell represented by the given XML object.
+  * @since 1.0
+  */
   public static ParseCell processParseCell(Element e) {
     int terminalTag = Integer.parseInt(e.getAttribute("id"));
     ParseCell cell = new ParseCell(terminalTag);
@@ -176,6 +245,12 @@ public class XMLObjectCreator {
     return cell;
   }
 
+  /**
+  * Process a parse state node in the XML and creates the associated ParseState object.
+  * @param e the XML element representing the parse state.
+  * @return the parse state represented by the given XML object.
+  * @since 1.0
+  */
   public static ParseState processParseState(Element e) {
     int state_num = Integer.parseInt(e.getAttribute("id"));
     ParseState state = new ParseState(state_num);
@@ -199,6 +274,12 @@ public class XMLObjectCreator {
     return state;
   }
 
+  /**
+  * Process an LR parse table node in the XML and creates the associated LRParseTable object.
+  * @param e the XML element representing the LR Parse Table.
+  * @return the LR Parse Table represented by the given XML object.
+  * @since 1.0
+  */
   public static LRParseTable processLRParseTable(Element e) {
     LRParseTable table = new LRParseTable();
     Node curState = e.getFirstChild();
