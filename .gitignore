@@ -2,3 +2,6 @@
 *.jar
 generated/*
 *.class
+.DS_Store
+genericLanguageServer/target
+genericLanguageServer/dependencies
