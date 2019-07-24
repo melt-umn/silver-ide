@@ -11,17 +11,18 @@ public class Main {
     Logger logger = Logger.getLogger();
     logger.setupAndUseDefaultLogFiles();
     BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-    RequestHandler requestHandler = new RequestHandler();
+    MessageHandler messageHandler = new MessageHandler();
+    int mainLoops = 0;
     Server server = Server.getServer();
 
     try {
       while (true)
       {
-        List<JSONObject> requests = new ArrayList<JSONObject>();
-        requests = requestHandler.getNextMessage(reader);
-        logger.logRequests(requests);
+        List<String> messages = new ArrayList<String>();
+        messages = messageHandler.getNextMessage(reader);
+        logger.logRequests(messages);
 
-        List<String> responses = requestHandler.handleMessages(requests);
+        List<String> responses = messageHandler.handleMessages(messages);
         for (String response : responses) {
           if (response != null) {
             logger.logResponse(response);
@@ -29,8 +30,11 @@ public class Main {
           }
         }
         server.sendAllServerMessages();
+        mainLoops++;
+        logger.logMessage("Asked Silver for server messages for time " + mainLoops);
         logger.clearLargeLogFiles();
         logger.flush();
+        server.exitIfNecessary();
       }
     } catch (Exception e) {
       logger.logException(e);

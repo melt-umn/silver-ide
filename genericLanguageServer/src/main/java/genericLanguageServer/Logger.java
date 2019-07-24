@@ -21,7 +21,7 @@ public class Logger {
   private int requestCount = 0;
   private int responseCount = 0;
 
-  private static final long MAX_LOGFILE_SIZE = 20971520; // 20 MB
+  private static final long MAX_LOGFILE_SIZE = 83886080; // 80 MB
 
   private static final boolean amDebugging = true;
 
@@ -98,12 +98,12 @@ public class Logger {
     return true;
   }
 
-  public boolean logRequests(List<JSONObject> requests) {
+  public boolean logRequests(List<String> requests) {
     try {
       if (requests.size() > 1) {
         requestFileWriter.write("BATCH REQUEST\n");
       }
-      for (JSONObject request : requests) {
+      for (String request : requests) {
         logRequest(request);
       }
       return true;
@@ -112,18 +112,17 @@ public class Logger {
     }
   }
 
-  public boolean logRequest(JSONObject request) {
+  public boolean logRequest(String request) {
     try {
       StringBuilder requestTitle = new StringBuilder("Request ");
       requestCount += 1;
       requestTitle.append(requestCount);
       requestTitle.append('\n');
       requestFileWriter.write(requestTitle.toString());
-      String requestText = request.toString();
-      if (requestText != null) {
-        requestFileWriter.write(requestText);
+      if (request != null) {
+        requestFileWriter.write(request);
       } else {
-        requestFileWriter.write("Error converting JSON to String\n");
+        requestFileWriter.write("request String is null\n");
       }
       requestFileWriter.write("\n");
       if (amDebugging) {
@@ -196,6 +195,12 @@ public class Logger {
       } else {
         exceptionFileWriter.write(e.getMessage());
       }
+      StackTraceElement[] stackTrace = e.getStackTrace();
+      for (int i = 0; i < stackTrace.length; i++) {
+        exceptionStackWriter.write(stackTrace[i].toString());
+        exceptionStackWriter.write('\n');
+      }
+      exceptionStackWriter.write("\n\n\n");
       e.printStackTrace(exceptionStackWriter);
       exceptionFileWriter.write('\n');
       if (amDebugging) {

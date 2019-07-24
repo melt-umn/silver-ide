@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class Server {
   // singleton instance of the server
-  private static Server server = new Server();
+  private static Server server;
 
   private static final boolean amLogging = true;
   private static Logger logger = Logger.getLogger();
@@ -57,7 +57,11 @@ public class Server {
     //messagesToSend = new PriorityQueue<ServerInitiatedMessage>();
     lastOnTypeInsertion = System.currentTimeMillis();
     shutdown = false;
-    Initialization.initSilver();
+    try {
+      Initialization.initSilver();
+    } catch (Exception e) {
+      logger.logException(e);
+    }
     silverInterface = new SilverHandlerInterface();
     state = new State();
   }
@@ -71,6 +75,9 @@ public class Server {
   }
 
   public static Server getServer() {
+    if (server == null) {
+      server = new Server();
+    }
     return server;
   }
 
@@ -244,5 +251,12 @@ public class Server {
 
   public boolean clientSendsWillSaveWaitUntilRequest() {
     return clientCapabilities.sendsWillSaveWaitUntilRequest();
+  }
+
+  public void exitIfNecessary() {
+    Pair<Boolean, Integer> exitInfo = SilverInterface.needToExit(state);
+    if (exitInfo.fst()) {
+      System.exit(exitInfo.snd());
+    }
   }
 }
