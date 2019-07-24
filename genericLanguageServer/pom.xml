@@ -67,10 +67,10 @@
          <phase>validate</phase>
          <configuration>
             <groupId>umn.melt</groupId>
-            <artifactId>ideDummyTest</artifactId>
+            <artifactId>ablecLSP</artifactId>
             <version>1.0</version>
             <packaging>jar</packaging>
-            <file>${basedir}/dependencies/ide.dummyTest.jar</file>
+            <file>${basedir}/dependencies/ableC.lsp.jar</file>
             <generatePom>true</generatePom>
          </configuration>
       </execution>
@@ -107,7 +107,7 @@
    </dependency>
    <dependency>
      <groupId>umn.melt</groupId>
-     <artifactId>ideDummyTest</artifactId>
+     <artifactId>ablecLSP</artifactId>
      <version>1.0</version>
    </dependency>
    <dependency>
