@@ -4,16 +4,16 @@ grammar driver;
  - Determined whether a file name should be considered a Silver source file.
  -}
 function isValidSlideFile
-Boolean ::= fileExt::String file::String
+Boolean ::= file::String
 {
-  return endsWith(fileExt, file) && !startsWith(".", file);
+  return endsWith(".slide", file) && !startsWith(".", file);
 }
 function listSlideFiles
-IOVal<[String]> ::= dir::String  fileExt::String ioin::IO
+IOVal<[String]> ::= dir::String  ioin::IO
 {
   local files :: IOVal<[String]> = listContents(dir, ioin);
 
-  return ioval(files.io, filter(isValidSlideFile(fileExt, _), files.iovalue));
+  return ioval(files.io, filter(isValidSlideFile, files.iovalue));
 }
 
 

@@ -2,13 +2,15 @@ grammar driver;
 
 {--
  - Eat the stream `need` and produce the output stream of (maybe, if found) Specs
- -
- - @param benv   The compiler configuration, including search paths
+ - @param specParser The parser for specification files
+ - @param specList The list of specifications to be kept
+ - @param args   The command line arguments
  - @param need   A **stream** of direcotires containing specifications to compile.
  -}
 function compileSpecs
-IOVal<Spec> ::=
+IOVal<Either<[ParseError] Spec>> ::=
   specParser::SpecParser
+  specList::[String]
   args::Decorated CmdArgs
   need::[String]
   ioin::IO
@@ -19,19 +21,31 @@ IOVal<Spec> ::=
   local specDir :: String = head(need);
   
   -- Build the first gramamr in the need list.
-  local now :: IOVal<Spec> =
-    compileSpecDirectory(specParser, args, specDir, ioin);
+  local now :: IOVal<Either<[ParseError] Spec>> =
+    compileSpecDirectory(specParser, specList, args, specDir, ioin);
 
   -- Recurse for the rest of the grammars needed.
-  local recurse :: IOVal<Spec> =
-    compileSpecs(specParser, args, tail(need), now.io);
+  local recurse :: IOVal<Either<[ParseError] Spec>> =
+    compileSpecs(specParser, specList, args, tail(need), now.io);
+
+   -- unsafeTrace is needed to force the IO
+  local nowValue :: Either<[ParseError] Spec> = unsafeTrace(now.iovalue, now.io);
+
+  local combined :: IOVal<Either<[ParseError] Spec>> =
+    if nowValue.isLeft && recurse.iovalue.isLeft 
+    -- combine errors
+    then ioval(recurse.io, left(nowValue.fromLeft ++ recurse.iovalue.fromLeft))
+    else if nowValue.isLeft
+    then ioval(recurse.io, nowValue)
+    else if recurse.iovalue.isLeft
+    then ioval(recurse.io, recurse.iovalue)
+    else ioval(recurse.io, right(appendSpecs(nowValue.fromRight, recurse.iovalue.fromRight)));
 
   return
     if null(need) then
-      ioval(ioin, nilSpec())
+      ioval(ioin, right(nilSpec()))
     else
-      -- unsafeTrace is needed to force the IO
-      ioval(recurse.io, appendSpecs(unsafeTrace(now.iovalue, now.io), recurse.iovalue));
+      combined;
 }
 
 
@@ -39,17 +53,15 @@ IOVal<Spec> ::=
  - Builds the Specification for the spec files in the directory  and obtains its symbols, either by building or from an interface file.
  -}
 function compileSpecDirectory
-IOVal<Spec> ::=
+IOVal<Either<[ParseError] Spec>> ::=
   specParser::SpecParser
+  specList::[String]
   args::Decorated CmdArgs
   specDirectory::String
   ioin::IO
 {
-  local ideFileExt :: String = 
-    -- "slide" is the default file extension
-    if null(args.specFileExt) then "slide" else head(args.specFileExt);
   -- IO Step 1: Get the spec files in the directory 
-  local files :: IOVal<[String]> = listSlideFiles(specDirectory, ideFileExt, ioin);
+  local files :: IOVal<[String]> = listSlideFiles(specDirectory, ioin);
 
   -- IO Step 2: Build the spec directory
   local pr :: IO =
@@ -58,12 +70,14 @@ IOVal<Spec> ::=
   local specCompile :: IOVal<Pair<[SpecRoot] [ParseError]>> =
     compileFiles(specParser, specDirectory, files.iovalue, pr);
 
+  -- filter out specs that are not specified in the spec list file
+  local filteredSpecs :: [SpecRoot] = filter(inSpecList(specList, _), specCompile.iovalue.fst);
   return 
     -- no parse errors
     if null(specCompile.iovalue.snd) then
-     ioval(specCompile.io, foldr(consSpec, nilSpec(), map((.specification), specCompile.iovalue.fst)))
+     ioval(specCompile.io, right(foldr(consSpec, nilSpec(), map((.specification), filteredSpecs))))
     else
-     ioval(specCompile.io, errorSpec(map((.parseErrors), specCompile.iovalue.snd), [specDirectory]));
+     ioval(specCompile.io, left(specCompile.iovalue.snd));
 
 }
 
@@ -76,7 +90,11 @@ IOVal<Spec> ::=
  - @return An ioval wrapping the list of parse results and parse errors.
  -}
 function compileFiles
-IOVal<Pair<[SpecRoot] [ParseError]>> ::= specParser::SpecParser  dir::String  files::[String]  ioin::IO
+IOVal<Pair<[SpecRoot] [ParseError]>> ::= 
+  specParser::SpecParser  
+  dir::String  
+  files::[String]  
+  ioin::IO
 {
   local file :: String = head(files);
   
@@ -98,8 +116,14 @@ IOVal<Pair<[SpecRoot] [ParseError]>> ::= specParser::SpecParser  dir::String  fi
       | parseSucceeded(rtree, _) ->
           ioval(recurse.io, pair(rtree :: recurse.iovalue.fst, recurse.iovalue.snd))
       | parseFailed(errval, _) ->
-          error(errval.parseErrors)
-      --    ioval(recurse.io, pair(recurse.iovalue.fst, errval :: recurse.iovalue.snd))
+      --    error(errval.parseErrors)
+          ioval(recurse.io, pair(recurse.iovalue.fst, errval :: recurse.iovalue.snd))
       end;
 }
 
+
+function inSpecList
+Boolean ::= specList::[String] spec::SpecRoot
+{
+  return containsBy(stringEq, spec.specificationName, specList);
+}

@@ -18,9 +18,8 @@ synthesized attribute flagAfterAst::CmdArgs;
 
 
 synthesized attribute searchPath :: [String];
-synthesized attribute specFileExt :: [String];
 synthesized attribute treesitterFile :: [String];
-attribute searchPath, specFileExt, treesitterFile occurs on CmdArgs;
+attribute searchPath, treesitterFile occurs on CmdArgs;
 
 {--
  - For defining base, default values for any attributes on CmdArgs
@@ -32,7 +31,6 @@ top::CmdArgs ::= remaining::[String]
   top.cmdError = nothing();
 
   top.searchPath = [];
-  top.specFileExt = [];
   top.treesitterFile = [];
 }
 
@@ -52,13 +50,6 @@ abstract production includeFlag
 top::CmdArgs ::= s::String rest::CmdArgs
 {
   top.searchPath = s :: forward.searchPath;
-  forwards to rest;
-}
-
-abstract production extFlag
-top::CmdArgs ::= s::String rest::CmdArgs
-{
-  top.specFileExt = s :: forward.specFileExt;
   forwards to rest;
 }
 
@@ -110,13 +101,11 @@ Either<String  Decorated CmdArgs> ::= args::[String]
   -- e.g. -I my/specs is obvious because it refers to a location to include.
   flags <- [
     pair("-I", option(includeFlag)),
-    pair("--ext", option(extFlag)),
     pair("--treesitter", option(treesitterFlag))
   ];
   flagdescs <- [
    -- Always start with \t, name options descriptively in <>, do not end with \n!
     "\t-I <path>   : path to specification files (SPEC_PATH)",
-    "\t--ext <ext> : use the specified file extension when looking for spec files",
     "\t--treesitter <serialized treesitter file> : modify the Treesitter grammar according to the specification"
   ];
 
@@ -130,8 +119,7 @@ Either<String  Decorated CmdArgs> ::= args::[String]
   errors := if a.cmdError.isJust then [a.cmdError.fromJust] else [];
 
   errors <-
-    if length(a.cmdRemaining) > 1 then ["Unable to interpret arguments: " ++ implode(" ", a.cmdRemaining)]
-    else if length(a.specFileExt) > 1 then ["Multiple options given for --ext flag: " ++ implode(" ", a.specFileExt)]
+    if length(a.cmdRemaining) > 2 then ["Unable to interpret arguments: " ++ implode(" ", a.cmdRemaining)]
     else if length(a.treesitterFile) > 1 then ["Multiple options given for --treesitter flag: " ++ implode(" ", a.treesitterFile)]
     else [];
 

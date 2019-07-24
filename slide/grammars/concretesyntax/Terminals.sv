@@ -20,6 +20,7 @@ terminal Under_kwd 'under';
 {-- Name Terminals --}
 terminal IdLower_t /[a-z][A-Za-z0-9\_]*/;
 terminal IdUpper_t /[A-Z][A-Za-z0-9\_]*/;
+terminal Id_t /[A-Za-z][A-Za-z0-9\_]*/;
 terminal NPMScopedPackageName_t /@[a-z0-9][a-z0-9_\-]*\/[a-z0-9_\-]+/;
 
 {-- Spec File Terminals --}
@@ -28,6 +29,7 @@ terminal Nonterminal_kwd 'nonterminal';
 terminal Lexer_kwd 'lexer';
 terminal Class_kwd 'class';
 terminal IdeSpec_kwd 'ide_specification';
+terminal Spec_kwd 'specification';
 terminal For_kwd 'for';
 {-- Global Spec Terminals --}
 terminal Global_kwd 'global';
