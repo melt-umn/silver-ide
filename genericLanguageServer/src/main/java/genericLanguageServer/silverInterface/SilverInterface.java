@@ -1,6 +1,7 @@
 package genericLanguageServer.silverInterface;
 
 import genericLanguageServer.Logger;
+import genericLanguageServer.Pair;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -16,11 +17,8 @@ public class SilverInterface {
     // silver wants strings as string catters
     StringCatter jsonForSilver = new StringCatter(json);
     NPair stateReturnPair = PhandleMessage.invoke(state.getState(), jsonForSilver, svInterface.getInterface());
-    logger.logMessage("Before fst");
     Object newState = Pfst.invoke(stateReturnPair);
-    logger.logMessage("After fst");
     state.setState((NState) newState);
-    logger.logMessage("Before snd");
     NMaybe responseMaybe = (NMaybe) Psnd.invoke(stateReturnPair);
     String jsonResponse = null;
     if (responseMaybe instanceof Pjust) {
@@ -29,7 +27,6 @@ public class SilverInterface {
       // silver gives back strings as string catters
       StringCatter silverJsonResponse = (StringCatter) silverGenericJsonResponse;
       jsonResponse = silverJsonResponse.toString();
-      logger.logMessage(jsonResponse);
     }
     return jsonResponse;
   }
@@ -47,5 +44,22 @@ public class SilverInterface {
       headSilverMessageList = headSilverMessageList.tail();
     }
     return messages;
+  }
+
+  public static Pair<Boolean, Integer> needToExit(State state) {
+    NPair exitAndCodePair = PneedToExit.invoke(state.getState());
+    Boolean needToExit = (Boolean) Pfst.invoke(exitAndCodePair);
+    if (needToExit) {
+      NMaybe exitCodeMaybe = (NMaybe) Psnd.invoke(exitAndCodePair);
+      if (exitCodeMaybe instanceof Pjust) {
+        Pjust exitCodeVal = (Pjust) exitCodeMaybe;
+        Integer exitCode = (Integer) exitCodeVal.getChild(0);
+        return new Pair(true, exitCode);
+      } else {
+        return new Pair(true, 1);
+      }
+    } else {
+      return new Pair(false, 0);
+    }
   }
 }

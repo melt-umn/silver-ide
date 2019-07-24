@@ -1,15 +1,12 @@
 package genericLanguageServer.silverInterface;
 
 import lib.lsp.*;
-import ide.dummyTest.*;
+import ableC.lsp.*;
 
 public class Initialization {
   public static void initSilver() {
-    lib.lsp.Init.initAllStatics();
-    lib.lsp.Init.init();
-    lib.lsp.Init.postInit();
-    ide.dummyTest.Init.initAllStatics();
-    ide.dummyTest.Init.init();
-    ide.dummyTest.Init.postInit();
+    ableC.lsp.Init.initAllStatics();
+    ableC.lsp.Init.init();
+    ableC.lsp.Init.postInit();
   }
 }
