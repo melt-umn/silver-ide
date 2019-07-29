@@ -5,9 +5,12 @@ import silver:definition:env;
 
 -- a list of terminals and there associated atom markup coloring name
 synthesized attribute atomMarkups :: [Pair<String String>];
+-- a list of terminals that are ignore terminals but should still be highlightable
+synthesized attribute highlightableIgnoreTerminals :: [String];
 
 nonterminal Spec with 
-  atomMarkups, langName, treesitterParserName, fileExtensions, firstLineRegex;
+  atomMarkups, langName, treesitterParserName, fileExtensions, firstLineRegex
+  , highlightableIgnoreTerminals;
 
 abstract production consSpec
 top::Spec ::= spec1::Spec spec2::Spec
@@ -17,6 +20,7 @@ top::Spec ::= spec1::Spec spec2::Spec
   top.treesitterParserName = orElse(spec1.treesitterParserName, spec2.treesitterParserName);
   top.firstLineRegex = orElse(spec1.firstLineRegex, spec2.firstLineRegex);
   top.fileExtensions = spec1.fileExtensions ++ spec2.fileExtensions;
+  top.highlightableIgnoreTerminals = spec1.highlightableIgnoreTerminals ++ spec2.highlightableIgnoreTerminals;
 }
 
 abstract production nilSpec
@@ -27,6 +31,7 @@ top::Spec ::=
   top.treesitterParserName = nothing();
   top.firstLineRegex = nothing();
   top.fileExtensions = [];
+  top.highlightableIgnoreTerminals = [];
 }
 
 aspect default production
@@ -37,6 +42,7 @@ top::Spec ::=
   top.treesitterParserName = nothing();
   top.firstLineRegex = nothing();
   top.fileExtensions = [];
+  top.highlightableIgnoreTerminals = [];
 }
 
 abstract production errorSpec
@@ -63,6 +69,12 @@ top::Spec ::= name::String properties::SpecTerminalProperties
   top.atomMarkups = 
     if properties.atomMarkupName.isJust then 
       [pair(name, properties.atomMarkupName.fromJust)]
+    else
+      [];
+
+  top.highlightableIgnoreTerminals =
+    if properties.ignoreHighlightable then
+      [name]
     else
       [];
 }

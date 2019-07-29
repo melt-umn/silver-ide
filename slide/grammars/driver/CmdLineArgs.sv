@@ -56,7 +56,7 @@ top::CmdArgs ::= s::String rest::CmdArgs
 abstract production treesitterFlag
 top::CmdArgs ::= s::String rest::CmdArgs
 {
-  top.treesitterFile = s::forward.treesitterFile;
+  top.treesitterFile = s :: forward.treesitterFile;
   forwards to rest;
 }
 
@@ -105,12 +105,12 @@ Either<String  Decorated CmdArgs> ::= args::[String]
   ];
   flagdescs <- [
    -- Always start with \t, name options descriptively in <>, do not end with \n!
-    "\t-I <path>   : path to specification files (SPEC_PATH)",
-    "\t--treesitter <serialized treesitter file> : modify the Treesitter grammar according to the specification"
+    "\t-I <path>               : path to specification files (SPEC_PATH)",
+    "\t--treesitter grammar.js : modify the Treesitter grammar according to the specification"
   ];
 
   local usage :: String =
-    "Usage: slide [options] ide:interface:metadata:file\n\nFlag options:\n" ++ implode("\n", sortBy(stringLte, flagdescs)) ++ "\n";
+    "Usage: slide [options] ide:interface:metadata:file specificationList \n\nFlag options:\n" ++ implode("\n", sortBy(stringLte, flagdescs)) ++ "\n";
   
   -- Parse the command line
   production a :: CmdArgs = interpretCmdArgs(flags, args);
