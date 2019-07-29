@@ -1,2 +1,6 @@
+#!/bin/bash
+
+set -eu
+
 silver -o SlideCompiler.jar -I grammars compiler
 mv SlideCompiler.jar ../jars/
