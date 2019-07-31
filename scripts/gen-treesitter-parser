@@ -3,7 +3,6 @@
 # CONSTANTS
 reset_color=`tput sgr0`
 use_red_color=`tput setaf 1`
-treesitter_parsers_directory="silver-syntax-highlighter/treesitter"
 
 script_startup()
 {
@@ -11,7 +10,7 @@ case `uname` in
 *Darwin*)
   READLINK=greadlink
   if [ ! -f `which greadlink` ]; then
-    echo "Missing greadlink. Please install coreutils:" 
+    echo "Missing greadlink. Please install coreutils:"
     echo -e "\tbrew install coreutils"
     exit 4
   fi
@@ -30,6 +29,8 @@ esac
   fi
   SILVER_SCRIPT=`${READLINK} ~/bin/silver`
   SILVER_HOME="${SILVER_SCRIPT/support\/bin\/silver/}"
+  SILVER_GENERATED_IDE_DIR=$SILVER_HOME/generated/ide
+  treesitter_parsers_directory=$SILVER_GENERATED_IDE_DIR/treesitter
   SILVER_IDE_SCRIPT=`${READLINK} ~/bin/slide`
   SILVER_IDE_HOME="${SILVER_IDE_SCRIPT/scripts\/slide/}"
 }
@@ -42,7 +43,7 @@ generate_treesitter_parser()
     mkdir -p $treesitter_parsers_directory
   fi
   cd $treesitter_parsers_directory
-  if [ -d "tree-sitter-$lang_name" ]; then  
+  if [ -d "tree-sitter-$lang_name" ]; then
     cd tree-sitter-$lang_name
     if [ $publish_parser = true -a "$version_num" = "" -a "$version_update_type" = "" ]; then
       npm version minor  # update version number
@@ -99,7 +100,7 @@ check_if_parser_already_exists()
     if [ $http_response -eq 200 -a $force_publish_attempt = false -a $publish_parser = true ]; then
       echo "${use_red_color}A parser for this language name already exists, but you dont have a directory already set up at $treesitter_parsers_directory/tree-sitter-$lang_name."
       echo "Please either use this parser or use a new language name."
-      echo "If this is what you intended redo the command with the -force option with the appropriate version specified with -version versionum.${reset_color}"
+      echo "If this is what you intended redo the command with the --force-publish option with the appropriate version specified with --version versionum.${reset_color}"
       exit 1
     fi
   fi
@@ -129,7 +130,8 @@ while [ "$1" != "" ]; do
     lang_name=$1
   elif [ "$1" = "--publish" ]; then
     publish_parser=true
-  elif [ "$1" = "--force" ]; then
+  elif [ "$1" = "--force-publish" ]; then
+    publish_parser=true
     force_publish_attempt=true
   elif [ "$1" = "--version" ]; then
     shift

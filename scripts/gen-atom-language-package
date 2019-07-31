@@ -1,6 +1,29 @@
 #!/bin/bash
 
-atom_packages_directory="silver-syntax-highlighter/atom"
+script_startup()
+{
+case `uname` in
+*Darwin*)
+  READLINK=greadlink
+  if [ ! -f `which greadlink` ]; then
+    echo "Missing greadlink. Please install coreutils:"
+    echo -e "\tbrew install coreutils"
+    exit 4
+  fi
+  ;;
+*)
+  READLINK=readlink
+  ;;
+esac
+  if [ ! -f ~/bin/silver ]; then
+    echo "Silver not able to be found. Abort"
+    exit 4
+  fi
+  SILVER_SCRIPT=`${READLINK} ~/bin/silver`
+  SILVER_HOME="${SILVER_SCRIPT/support\/bin\/silver/}"
+  SILVER_GENERATED_IDE_DIR=$SILVER_HOME/generated/ide
+  atom_packages_directory=$SILVER_GENERATED_IDE_DIR/atom
+}
 
 
 generate_atom_package()
@@ -19,7 +42,7 @@ generate_atom_package()
   apm link $atom_package_dir
   cd language-$lang_name
   cp $original_dir/$lang_name.cson $atom_package_dir/grammars/
-  if [ ! -d node_modules/tree-sitter-$lang_name ]; then 
+  if [ ! -d node_modules/tree-sitter-$lang_name ]; then
     npm install @$package_scope/tree-sitter-$lang_name
   else
     old_version=`npm view tree-sitter-$lang_name version`
@@ -40,10 +63,11 @@ if [ "$lang_name" = "" ]; then
   exit 1
 fi
 if [ "$package_scope" = "" ]; then
-  echo "A package scope needs to be provided to the script as the second argument." 
+  echo "A package scope needs to be provided to the script as the second argument."
   echo "This scope is the scope that your treesitter parser is a part of in the NPM registry."
   exit 1
 fi
 shift
 shift
+script_startup
 generate_atom_package
