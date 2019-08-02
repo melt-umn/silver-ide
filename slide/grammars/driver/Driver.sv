@@ -81,7 +81,14 @@ IOVal<Integer> ::= args::[String] specParser::SpecParser ioIn::IO
       return 10;
     } 
     else {
-      writeFileM(languageName ++ ".cson", decIDEInterface.atomGrammarFile);
+      if cmdArgs.wantAtomLanguageFile then {
+        printM("Received --atom-language-file flag printing out " ++ languageName ++ ".cson\n");
+        writeFileM(languageName ++ ".cson", decIDEInterface.atomLanguageFile);
+      }
+      if cmdArgs.wantAtomLSPFile then {
+        printM("Received --atom-lsp-file flag printing out " ++ "AtomPackageLSPMain.js\n");
+        writeFileM("AtomPackageLSPMain.js", decIDEInterface.atomLSPFile);
+      }
       if modifyingTreesitter then {
         printM("Writing new grammar.js file after specification\n");
         printM("Making these terminals highlightable:\n" ++ implode("\n", spec.highlightableIgnoreTerminals) ++ "\n");

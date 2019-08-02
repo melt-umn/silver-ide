@@ -19,7 +19,10 @@ synthesized attribute flagAfterAst::CmdArgs;
 
 synthesized attribute searchPath :: [String];
 synthesized attribute treesitterFile :: [String];
-attribute searchPath, treesitterFile occurs on CmdArgs;
+synthesized attribute wantAtomLSPFile :: Boolean;
+synthesized attribute wantAtomLanguageFile :: Boolean;
+attribute searchPath, treesitterFile, wantAtomLSPFile, wantAtomLanguageFile 
+  occurs on CmdArgs;
 
 {--
  - For defining base, default values for any attributes on CmdArgs
@@ -29,6 +32,9 @@ top::CmdArgs ::= remaining::[String]
 {
   top.cmdRemaining = remaining;
   top.cmdError = nothing();
+
+  top.wantAtomLSPFile = false;
+  top.wantAtomLanguageFile = false;
 
   top.searchPath = [];
   top.treesitterFile = [];
@@ -60,6 +66,19 @@ top::CmdArgs ::= s::String rest::CmdArgs
   forwards to rest;
 }
 
+abstract production atomLanguageFlag
+top::CmdArgs ::= rest::CmdArgs
+{
+  top.wantAtomLanguageFile = true;
+  forwards to rest;
+}
+
+abstract production atomLSPFlag
+top::CmdArgs ::= rest::CmdArgs
+{
+  top.wantAtomLSPFile = true;
+  forwards to rest;
+}
 {--
  - As in the terminology used in Silver, a 'flag' is a cmd line option
  - with no parameters.
@@ -101,12 +120,16 @@ Either<String  Decorated CmdArgs> ::= args::[String]
   -- e.g. -I my/specs is obvious because it refers to a location to include.
   flags <- [
     pair("-I", option(includeFlag)),
-    pair("--treesitter", option(treesitterFlag))
+    pair("--treesitter", option(treesitterFlag)),
+    pair("--atom-language-file", flag(atomLanguageFlag)),
+    pair("--atom-lsp-file", flag(atomLSPFlag))
   ];
   flagdescs <- [
    -- Always start with \t, name options descriptively in <>, do not end with \n!
     "\t-I <path>               : path to specification files (SPEC_PATH)",
-    "\t--treesitter grammar.js : modify the Treesitter grammar according to the specification"
+    "\t--treesitter grammar.js : modify the Treesitter grammar according to the specification",
+    "\t--atom-language-file    : generate the cson file used for creating an Atom language package for your language",
+    "\t--atom-lsp-file         : generate the js file used for creating an Atom LSP package for your language"
   ];
 
   local usage :: String =
