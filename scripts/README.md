@@ -3,7 +3,9 @@ This directory contains a number of scripts that serve as wrappers for one of th
 
 ### Table of Contents
   - [`gen-atom-language-package`](#generate-an-atom-language-package)
+  - [`gen-atom-lsp-package`](#generate-an-atom-lsp-package)
   - [`gen-treesitter-parser`](#generate-a-treesitter-parser)
+  - [`hook-into-genericLanguageServer`](#hook-into-generic-language-server)
   - [`slide`](#run-slide)
 
 
@@ -64,6 +66,46 @@ be in the same directory you ran the Silver command from.
   - `--version [version number/version update type]`: This can be used to specify a specific version number of the Treesitter parser on the NPM registry.
   This can be useful if a conflict arises in the versioning.
   You can specify either a specific version number, e.g. `-version 1.2.3` or a version update type which can be `patch`, `minor`, or `major`, e.g. -version patch which would change the version number from `1.2.3` to `1.2.4`. The default version update when this script is called is `minor`.
+
+### Generate an Atom LSP Package
+This script (`gen-atom-lsp-package`) creates an Atom package
+that copies the `genericAtomLSPPackage` and makes changes to
+put the language name where it is necessary in the package
+and moves this specific copy to the generated directory.
+
+The script is run as follows.
+
+`gen-atom-lsp-package [lang name]`
+
+The language name is the first argument and must match the
+language name used when running Silver with the
+`--treesitter-spec` and in the `gen-atom-language-package`
+script.
+
+This script needs to be used after you use the
+`hook-into-genericLanguageServer` which builds a
+language server to build the Atom package that utilizes
+this langauge server.
+
+### Hook Into Generic Language Server
+This script (`hook-into-genericLanguageServer`) copies the
+generic language server and makes the necessary changes for
+it to work with the jar built from your Silver
+implementation. Note this jar should be built with the
+`--one-jar` flag so that it includes the Silver runtime as
+well.
+
+This script is run as follows
+
+`hook-into-genericLanguageServer [jarName]`
+
+This script must be run from the directory where the jar is
+located. This will place a language server into the
+`generated` directory of your `silver-ide` branch. To use
+this server in Atom use the `gen-atom-lsp-package` script
+from the directory where the `AtomPackageLSPMain.js` file was
+output after running with slide with the `--atom-lsp-file`
+flag.
 
 ### Run slide
 Slide (Specification Language for IDEs) generates IDE specification files based on the slide files written about your Silver language.
