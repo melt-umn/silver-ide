@@ -1,7 +1,7 @@
 <project>
  <modelVersion>4.0.0</modelVersion>
  <groupId>melt.umn</groupId>
- <artifactId>genericLanguageServer</artifactId>
+ <artifactId>YOUR-LANG-SERVER-NAME</artifactId>
  <version>1.0</version>
 
 <build>
@@ -55,37 +55,22 @@
             <artifactId>libLSP</artifactId>
             <version>1.0</version>
             <packaging>jar</packaging>
-            <file>${basedir}/dependencies/lib.lsp.jar</file>
+            <file>SILVER-LSP-JAR-LOCATION</file>
             <generatePom>true</generatePom>
          </configuration>
       </execution>
       <execution>
-         <id>installDummyTest</id>
+         <id>installLanguageSpecificJar</id>
          <goals>
             <goal>install-file</goal>
          </goals>
          <phase>validate</phase>
          <configuration>
             <groupId>umn.melt</groupId>
-            <artifactId>ablecLSP</artifactId>
+            <artifactId>YOUR-JAR-NAME</artifactId>
             <version>1.0</version>
             <packaging>jar</packaging>
-            <file>${basedir}/dependencies/ableC.lsp.jar</file>
-            <generatePom>true</generatePom>
-         </configuration>
-      </execution>
-      <execution>
-         <id>installSilverRuntime</id>
-         <goals>
-            <goal>install-file</goal>
-         </goals>
-         <phase>validate</phase>
-         <configuration>
-            <groupId>umn.melt</groupId>
-            <artifactId>SilverRuntime</artifactId>
-            <version>1.0</version>
-            <packaging>jar</packaging>
-            <file>${basedir}/dependencies/SilverRuntime.jar</file>
+            <file>YOUR-JAR-LOCATION</file>
             <generatePom>true</generatePom>
          </configuration>
       </execution>
@@ -93,13 +78,7 @@
 </plugin>
 </plugins>
 </build>
-
  <dependencies>
-   <dependency>
-     <groupId>org.json</groupId>
-     <artifactId>json</artifactId>
-     <version>20180813</version>
-   </dependency>
    <dependency>
      <groupId>umn.melt</groupId>
      <artifactId>libLSP</artifactId>
@@ -107,12 +86,7 @@
    </dependency>
    <dependency>
      <groupId>umn.melt</groupId>
-     <artifactId>ablecLSP</artifactId>
-     <version>1.0</version>
-   </dependency>
-   <dependency>
-     <groupId>umn.melt</groupId>
-     <artifactId>SilverRuntime</artifactId>
+     <artifactId>YOUR-JAR-NAME</artifactId>
      <version>1.0</version>
    </dependency>
  </dependencies>
