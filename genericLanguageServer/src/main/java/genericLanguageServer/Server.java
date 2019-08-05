@@ -1,17 +1,7 @@
 package genericLanguageServer;
 
-import genericLanguageServer.lspInterface.*;
-import genericLanguageServer.lspInterface.document.*;
-import genericLanguageServer.lspInterface.initialization.*;
-import genericLanguageServer.lspInterface.diagnostics.*;
-import genericLanguageServer.lspInterface.references.*;
-import genericLanguageServer.lspInterface.signatureHelp.*;
-import genericLanguageServer.lspInterface.completion.*;
-import genericLanguageServer.lspInterface.highlighting.*;
-import genericLanguageServer.fileTracking.*;
 import genericLanguageServer.silverInterface.*;
 
-import java.util.PriorityQueue;
 import java.util.List;
 import java.util.ArrayList;
 

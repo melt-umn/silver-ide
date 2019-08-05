@@ -1,10 +1,7 @@
 package genericLanguageServer;
 
-import genericLanguageServer.lspInterface.messages.*;
-import genericLanguageServer.lspInterface.shutdown.*;
 import genericLanguageServer.silverInterface.*;
 
-import org.json.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
