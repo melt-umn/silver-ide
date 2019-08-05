@@ -1,12 +1,12 @@
 package genericLanguageServer.silverInterface;
 
 import lib.lsp.*;
-import ableC.lsp.*;
+import YOUR-GRAMMAR.*;
 
 public class Initialization {
   public static void initSilver() {
-    ableC.lsp.Init.initAllStatics();
-    ableC.lsp.Init.init();
-    ableC.lsp.Init.postInit();
+    YOUR-GRAMMAR.Init.initAllStatics();
+    YOUR-GRAMMAR.Init.init();
+    YOUR-GRAMMAR.Init.postInit();
   }
 }
