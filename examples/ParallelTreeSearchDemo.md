@@ -15,7 +15,17 @@ This example shows you how to use Treesitter highlighting for ableC and set of e
 Once you have all the previous steps, you are ready to test out the example. To do this go into the new `ableC-sample-projects/parallel_tree_search` directory.
 
 There are 4 make commands you can run
-1. `make atom-ide-demo`: This is meant for first time use to build the Treesitter parser and Atom highlighting for demo modes. This only needs to be run once.
+1. `make atom-ide-demo`: This is meant for first time use to build the Treesitter parser and Atom highlighting for demo modes.
+This only needs to be run once.
+This adds the `--treesitter-demo` flag to the Silver command which instructs Silver to
+ introduce a new wrapper nonterminal for bridge productions between host and extensions
+ which allows every terminal in the extension to be underneath an extension nonterminal.
+ This will cause the MDA to fail, but for demo highlighting purposes we do not care.
+
+Also, this command along with `make atom-ide` do not need to be run because you can
+use the parser published under @joeblanchard scope. However, if you want access to
+your own parser for some reason you can run this command or `atom-ide` command.
+
 2. `make update-spec-demo`: This should be used if you change the specification files with the `.demo` extension to rebuild the Atom highlighting package. This should only be done after you have already run `make atom-ide-demo`
 3. `make atom-ide`: This is meant for first time use to build the Treesitter parser and Atom highlighting for the language without any special highlighting designed for demos.
 4. `make update-spec`: This should be used if you change the specification files with the `.slide` extension after you have already run `make atom-ide`.
