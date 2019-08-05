@@ -1,0 +1,88 @@
+#!/bin/bash
+
+script_startup()
+{
+case `uname` in
+*Darwin*)
+  READLINK=greadlink
+  if [ ! -f `which greadlink` ]; then
+    echo "Missing greadlink. Please install coreutils:"
+    echo -e "\tbrew install coreutils"
+    exit 4
+  fi
+  ;;
+*)
+  READLINK=readlink
+  ;;
+esac
+  if [ ! -f ~/bin/silver ]; then
+    echo "Silver not able to be found. Abort"
+    exit 4
+  fi
+  if [ ! -f ~/bin/slide ]; then
+    echo "Slide not able to be found. Abort"
+    exit 4
+  fi
+  SILVER_SCRIPT=`${READLINK} ~/bin/silver`
+  SILVER_HOME="${SILVER_SCRIPT/support\/bin\/silver/}"
+  SILVER_LSP_JAR=${SILVER_HOME}jars/lib.lsp.jar
+  SILVER_IDE_SCRIPT=`${READLINK} ~/bin/slide`
+  SILVER_IDE_HOME="${SILVER_IDE_SCRIPT/scripts\/slide/}"
+  SILVER_IDE_GENERATED_DIR=${SILVER_IDE_HOME}generated
+}
+
+copy_generic_lang_server()
+{
+  echo "Copying generic language server"
+  cp -r ${SILVER_IDE_HOME}genericLanguageServer/* ${outputLocation}
+  cd ${outputLocation}
+  echo "Done copying generic language server"
+}
+
+fix_pom_file()
+{
+  cd ${outputLocation}
+  echo "Replacing defaults in the pom file"
+  # note using + as separator instead of / since pathes contain slashes
+  sed "s+SILVER-LSP-JAR-LOCATION+$SILVER_LSP_JAR+g" pom.xml > pom2.xml
+  mv pom2.xml pom.xml
+  sed "s+YOUR-JAR-NAME+$jarName+g" pom.xml > pom2.xml
+  mv pom2.xml pom.xml
+  sed "s+YOUR-JAR-LOCATION+$original_dir/$jarName+g" pom.xml  > pom2.xml
+  mv pom2.xml pom.xml
+  sed "s+YOUR-LANG-SERVER-NAME+${gramName}LanguageServer+g" pom.xml  > pom2.xml
+  mv pom2.xml pom.xml
+  echo "Done replacing defaults in the pom file"
+}
+
+get_correct_initialization()
+{
+  cd ${outputLocation}/src/main/java/genericLanguageServer/silverInterface
+  sed "s/YOUR-GRAMMAR/${packageName}/g" Initialization.java > Initialization2.java
+  mv Initialization2.java Initialization.java
+}
+
+script_startup
+original_dir=$(pwd)
+
+jarName=$1
+if [ "$jarName" = "" ]; then
+    echo "${use_red_color}No jar name was specified. This script should be run in the directory where this jar is. ${reset_color}"
+    exit 1
+fi
+# grammar name with dashes instead of . from ja rfile
+gramName=`echo $jarName | rev | cut -c5- | rev | sed 's/\./-/'g`
+packageName=`echo $jarName | rev | cut -c5- | rev`
+
+if [ ! -d ${SILVER_IDE_GENERATED_DIR}/LSPServers ]; then
+  mkdir -p ${SILVER_IDE_GENERATED_DIR}/LSPServers
+fi
+mkdir -p ${SILVER_IDE_GENERATED_DIR}/LSPServers/${gramName}LanguageServer
+outputLocation=${SILVER_IDE_GENERATED_DIR}/LSPServers/${gramName}LanguageServer
+
+copy_generic_lang_server
+fix_pom_file
+get_correct_initialization
+cd $outputLocation
+mvn initialize
+mvn package

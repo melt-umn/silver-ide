@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# CONSTANTS
+reset_color=`tput sgr0`
+use_red_color=`tput setaf 1`
+
 script_startup()
 {
 case `uname` in
@@ -15,13 +19,13 @@ case `uname` in
   READLINK=readlink
   ;;
 esac
-  if [ ! -f ~/bin/silver ]; then
-    echo "Silver not able to be found. Abort"
+  if [ ! -f ~/bin/slide ]; then
+    echo "Silver IDE not able to be found. Abort"
     exit 4
   fi
-  SILVER_SCRIPT=`${READLINK} ~/bin/silver`
-  SILVER_HOME="${SILVER_SCRIPT/support\/bin\/silver/}"
-  SILVER_GENERATED_IDE_DIR=$SILVER_HOME/generated/ide
+  SILVER_IDE_SCRIPT=`${READLINK} ~/bin/slide`
+  SILVER_IDE_HOME="${SILVER_IDE_SCRIPT/scripts\/slide/}"
+  SILVER_IDE_GENERATED_DIR=$SILVER_IDE_HOME/generated
   atom_packages_directory=$SILVER_GENERATED_IDE_DIR/atom
 }
 
@@ -59,12 +63,12 @@ original_dir=$(pwd)
 lang_name=$1
 package_scope=$2
 if [ "$lang_name" = "" ]; then
-  echo "A language name needs to be provided to the script as the first argument"
+  echo "${use_red_color}A language name needs to be provided to the script as the first argument. ${reset_color}"
   exit 1
 fi
 if [ "$package_scope" = "" ]; then
-  echo "A package scope needs to be provided to the script as the second argument."
-  echo "This scope is the scope that your treesitter parser is a part of in the NPM registry."
+  echo "${use_red_color}A package scope needs to be provided to the script as the second argument."
+  echo "This scope is the scope that your treesitter parser is a part of in the NPM registry. ${reset_color}"
   exit 1
 fi
 shift

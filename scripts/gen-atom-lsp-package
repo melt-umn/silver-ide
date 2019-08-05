@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# CONSTANTS 
+reset_color=`tput sgr0`
+use_red_color=`tput setaf 1`
+
+script_startup()
+{
+case `uname` in
+*Darwin*)
+  READLINK=greadlink
+  if [ ! -f `which greadlink` ]; then
+    echo "Missing greadlink. Please install coreutils:"
+    echo -e "\tbrew install coreutils"
+    exit 4
+  fi
+  ;;
+*)
+  READLINK=readlink
+  ;;
+esac
+  if [ ! -f ~/bin/slide ]; then
+    echo "Silver IDE not able to be found. Abort"
+    exit 4
+  fi
+  SILVER_IDE_SCRIPT=`${READLINK} ~/bin/slide`
+  SILVER_IDE_HOME="${SILVER_IDE_SCRIPT/scripts\/slide/}"
+  SILVER_IDE_GENERATED_DIR=${SILVER_IDE_HOME}generated
+  atom_packages_directory=$SILVER_GENERATED_IDE_DIR/atom
+}
+
+copy_generic_lsp_package()
+{
+  echo "Copying generic Atom Language Server Protocol package"
+  cp -r ${SILVER_IDE_HOME}/genericAtomLSPPackage/* ${outputLocation}
+  cd ${outputLocation}
+  apm link ${outputLocation}
+  echo "Done copying atom Language Server Protocol package"
+}
+
+change_package_json()
+{
+  cd ${outputLocation}
+  sed "s/YOUR-LANGUAGE-NAME/${languageName}/g" package.json > package2.json
+  mv package2.json package.json
+}
+
+move_main_file() 
+{
+  cd ${original_dir}
+  mv AtomPackageLSPMain.js ${outputLocation}/lib
+  cd ${outputLocation}
+}
+
+# Script start
+original_dir=$(pwd)
+script_startup
+
+languageName=$1
+if [ "$languageName" = "" ]; then
+  echo "${use_red_color}Specify a language name when running this script${reset_color}"
+  exit 1
+fi
+
+if [ ! -d ${SILVER_IDE_GENERATED_DIR}/atom ]; then
+  mkdir -p ${SILVER_IDE_GENERATED_DIR}/atom
+fi
+mkdir -p ${SILVER_IDE_GENERATED_DIR}/atom/ide-${languageName}
+outputLocation=${SILVER_IDE_GENERATED_DIR}/atom/ide-${languageName}
+
+copy_generic_lsp_package
+change_package_json
+move_main_file
+cd $outputLocation
+npm install
