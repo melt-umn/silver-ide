@@ -1,7 +1,6 @@
 package genericLanguageServer;
 
 import java.io.*;
-import org.json.*;
 import java.util.List;
 
 public class Logger {
@@ -272,12 +271,12 @@ public class Logger {
   public void setupAndUseDefaultLogFiles() throws IOException {
     int numLogFiles = 6;
     File[] logFiles = new File[numLogFiles];
-    logFiles[0] = new File("/Users/joeblanchard/serverlogs/RequestLog");
-    logFiles[1] = new File("/Users/joeblanchard/serverlogs/ResponseLog");
-    logFiles[2] = new File("/Users/joeblanchard/serverlogs/ExceptionLog");
-    logFiles[3] = new File("/Users/joeblanchard/serverlogs/MessageLog");
-    logFiles[4] = new File("/Users/joeblanchard/serverlogs/StackTraceLog");
-    logFiles[5] = new File("/Users/joeblanchard/serverlogs/ExceptionStackLog");
+    logFiles[0] = new File("/Users/joeblanchard/.LSPServerLogs/RequestLog");
+    logFiles[1] = new File("/Users/joeblanchard/.LSPServerLogs/ResponseLog");
+    logFiles[2] = new File("/Users/joeblanchard/.LSPServerLogs/ExceptionLog");
+    logFiles[3] = new File("/Users/joeblanchard/.LSPServerLogs/MessageLog");
+    logFiles[4] = new File("/Users/joeblanchard/.LSPServerLogs/StackTraceLog");
+    logFiles[5] = new File("/Users/joeblanchard/.LSPServerLogs/ExceptionStackLog");
     for (File file : logFiles) {
       file.getParentFile().mkdirs();
       file.createNewFile();
