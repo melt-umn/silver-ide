@@ -3,15 +3,20 @@ grammar ideinterface;
 imports silver:extension:ideinterface;
 imports concretesyntax:regex only regexString;
 imports abstractsyntax;
+imports driver;
+
 
 synthesized attribute atomLanguageFile :: String occurs on IDEInterfaceSyntaxRoot;
 synthesized attribute atomLSPFile :: String occurs on IDEInterfaceSyntaxRoot;
 autocopy attribute spec :: Spec occurs on IDEInterfaceSyntaxRoot, IDEInterfaceSyntax, IDEInterfaceSyntaxDcl;
+autocopy attribute buildEnv :: BuildEnv occurs on IDEInterfaceSyntaxRoot, IDEInterfaceSyntax, IDEInterfaceSyntaxDcl;
 
 aspect production ideSyntaxRoot
 top::IDEInterfaceSyntaxRoot ::= s::IDEInterfaceSyntax
 {
   local languageName :: String = top.spec.langName.fromJust;
+  local lspDirName :: String = substitute(".", "-", top.spec.lspJarName.fromJust);
+
   local firstLineRegex :: String = 
     if top.spec.firstLineRegex.isJust then
       s"""firstLineRegex: ['${top.spec.firstLineRegex.fromJust.regexString}']"""
@@ -45,7 +50,7 @@ top::IDEInterfaceSyntaxRoot ::= s::IDEInterfaceSyntax
 
     startServerProcess () {
       const command = "java"
-      const args = ["-jar", "Users/joeblanchard/MELT/highlighting-test-lang/ideLanguageServer/target/exampleLanguageServer-1.0.jar"]
+      const args = ["-jar", "${top.buildEnv.silverIDEHome}/generated/LSPServers/${lspDirName}LanguageServer/target/${lspDirName}-1.0.jar"]
       const childProcess = cp.spawn(command, args)
       this.captureServerErrors(childProcess)
       if (debug) {

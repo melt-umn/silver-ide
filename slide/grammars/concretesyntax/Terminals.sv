@@ -8,6 +8,7 @@ terminal LanguageName_kwd 'language_name';
 terminal FileExtensions_kwd 'file_extensions';
 terminal TreesitterParser_kwd 'treesitter_parser';
 terminal FirstLineRegex_kwd 'first_line_regex';
+terminal LSPJarName_kwd 'lsp_jar_name';
 
 {-- Quick Spec Terminals --}
 terminal Color_kwd 'color';

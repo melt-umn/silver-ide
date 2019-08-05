@@ -6,6 +6,7 @@ import concretesyntax:regex;
 --}
 synthesized attribute langName :: Maybe<String>;
 synthesized attribute treesitterParserName :: Maybe<String>;
+synthesized attribute lspJarName :: Maybe<String>;
 synthesized attribute fileExtensions :: [String];
 synthesized attribute firstLineRegex :: Maybe<RegularExpression>;
 synthesized attribute grammarWideGlobalSpecs :: Spec;
@@ -13,16 +14,17 @@ synthesized attribute prefixSpecs :: Spec;
 
 nonterminal LanguageProperties with 
   treesitterParserName, langName, fileExtensions, firstLineRegex,
-  grammarWideGlobalSpecs, prefixSpecs;
+  grammarWideGlobalSpecs, prefixSpecs, lspJarName;
 nonterminal LanguageProperty with 
   treesitterParserName, langName, fileExtensions, firstLineRegex,
-  grammarWideGlobalSpecs, prefixSpecs;
+  grammarWideGlobalSpecs, prefixSpecs, lspJarName;
 
 abstract production consLanguageProp
 top::LanguageProperties ::= h::LanguageProperty t::LanguageProperties
 {
   top.langName = orElse(h.langName, t.langName);
   top.treesitterParserName = orElse(h.treesitterParserName, t.treesitterParserName);
+  top.lspJarName = orElse(h.lspJarName, t.lspJarName);
   top.firstLineRegex = orElse(h.firstLineRegex, t.firstLineRegex);
   top.fileExtensions = h.fileExtensions ++ t.fileExtensions;
   top.grammarWideGlobalSpecs = consSpec(h.grammarWideGlobalSpecs, t.grammarWideGlobalSpecs);
@@ -34,6 +36,7 @@ top::LanguageProperties ::=
 {
   top.langName = nothing();
   top.treesitterParserName = nothing();
+  top.lspJarName = nothing();
   top.firstLineRegex = nothing();
   top.fileExtensions = [];
   top.grammarWideGlobalSpecs = nilSpec();
@@ -45,6 +48,7 @@ top::LanguageProperty ::=
 {
   top.langName = nothing();
   top.treesitterParserName = nothing();
+  top.lspJarName = nothing();
   top.firstLineRegex = nothing();
   top.fileExtensions = [];
   top.grammarWideGlobalSpecs = nilSpec();
@@ -85,4 +89,10 @@ abstract production prefixSpec
 top::LanguageProperty ::= spec::Spec
 {
   top.prefixSpecs = spec;
+}
+
+abstract production lspJarNameProp
+top::LanguageProperty ::= name::String
+{
+  top.lspJarName = just(name);
 }

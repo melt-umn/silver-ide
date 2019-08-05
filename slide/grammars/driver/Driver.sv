@@ -42,7 +42,7 @@ IOVal<Integer> ::= args::[String] specParser::SpecParser ioIn::IO
   local ideInterface :: IDEInterfaceSyntaxRoot = ideInterfaceEither.fromRight;
  
   local decIDEInterface :: Decorated IDEInterfaceSyntaxRoot = 
-    decorate ideInterface with { spec = spec; };
+    decorate ideInterface with { spec = spec; buildEnv = buildEnv; };
 
   local languageName :: String = spec.langName.fromJust;
 
@@ -79,7 +79,11 @@ IOVal<Integer> ::= args::[String] specParser::SpecParser ioIn::IO
     else if ideInterfaceEither.isLeft then {
       printM(ideInterfaceEither.fromLeft);
       return 10;
-    } 
+    }
+    else if cmdArgs.wantAtomLSPFile && !spec.lspJarName.isJust then {
+      printM("LSP jar name not specified as a global property of your language.\n");
+      return 11;
+    }
     else {
       if cmdArgs.wantAtomLanguageFile then {
         printM("Received --atom-language-file flag printing out " ++ languageName ++ ".cson\n");

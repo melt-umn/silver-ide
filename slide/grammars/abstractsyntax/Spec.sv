@@ -10,13 +10,14 @@ synthesized attribute highlightableIgnoreTerminals :: [String];
 
 nonterminal Spec with 
   atomMarkups, langName, treesitterParserName, fileExtensions, firstLineRegex
-  , highlightableIgnoreTerminals;
+  , highlightableIgnoreTerminals, lspJarName;
 
 abstract production consSpec
 top::Spec ::= spec1::Spec spec2::Spec
 {
   top.atomMarkups = spec1.atomMarkups ++ spec2.atomMarkups;
   top.langName = orElse(spec1.langName, spec2.langName);
+  top.lspJarName = orElse(spec1.lspJarName, spec2.lspJarName);
   top.treesitterParserName = orElse(spec1.treesitterParserName, spec2.treesitterParserName);
   top.firstLineRegex = orElse(spec1.firstLineRegex, spec2.firstLineRegex);
   top.fileExtensions = spec1.fileExtensions ++ spec2.fileExtensions;
@@ -28,6 +29,7 @@ top::Spec ::=
 {
   top.atomMarkups = [];
   top.langName = nothing();
+  top.lspJarName = nothing();
   top.treesitterParserName = nothing();
   top.firstLineRegex = nothing();
   top.fileExtensions = [];
@@ -39,6 +41,7 @@ top::Spec ::=
 {
   top.atomMarkups = [];
   top.langName = nothing();
+  top.lspJarName = nothing();
   top.treesitterParserName = nothing();
   top.firstLineRegex = nothing();
   top.fileExtensions = [];
@@ -55,6 +58,7 @@ abstract production globalSpec
 top::Spec ::= properties::LanguageProperties
 {
   top.langName = properties.langName;
+  top.lspJarName = properties.lspJarName;
   top.treesitterParserName = properties.treesitterParserName;
   top.fileExtensions = properties.fileExtensions;
   top.firstLineRegex = properties.firstLineRegex;

@@ -64,8 +64,7 @@ IOVal<Either<[String] BuildEnv>> ::= args::Decorated CmdArgs  ioin::IO
   -- right now just error
   local derivedHome :: IOVal<String> =
     if envHome.iovalue == "" then
-      ioval(envPath.io, "")
-      --determineDefaultSilverHome(envSG.io)
+      determineDefaultSilverIdeHome(envPath.io)
     else
       ioval(envPath.io, envHome.iovalue);
 
@@ -86,20 +85,26 @@ function errorCheckEnv
 IOVal<[String]> ::= benv::BuildEnv ioin::IO
 {
   local isSpecDir :: IOVal<Boolean> = isDirectory(benv.defaultSpecPath, ioin);
-  local errors :: [String] = []; -- dont need these things yet.
-  {--
+  local errors :: [String] =
     if benv.silverIDEHome == "/" -- because we called 'endWithSlash' on empty string
     then ["Missing SILVER_IDE_HOME environment variable"] --or --silver-home <path>.\nThis should have been set up by the 'silver' script.\n"]
-    else if !isSpecDir.iovalue
-    then ["Missing standard library specifications: tried " ++ benv.defaultSpecPath ++ " but this did not exist.\n"]
+    --else if !isSpecDir.iovalue
+    --then ["Missing standard library specifications: tried " ++ benv.defaultSpecPath ++ " but this did not exist.\n"]
     else []; 
 --}
   return ioval(isSpecDir.io, errors);
 }
 
-{-- TODO: Implement this function
-function determineDefaultSilverHome
+{-- This works just like finding the home of silver but instead of Init.class
+    being from the Silver jar it is isntead from the slide jar
+--}
+function determineDefaultSilverIdeHome
 IOVal<String> ::=  i::IO
 {
+  return error("NYI");
+} foreign {
+  -- This grabs the path to this jar (using Init.class as the thing to find the path to)
+  -- Then goes up two levels (HOME/jars/file.jar to HOME) and returns that.
+  -- If anything goes wrong, we crash.
+  "java" : return "new core.Pioval(%i%, common.Util.determineSilverHomePath(Init.class))";
 }
---}

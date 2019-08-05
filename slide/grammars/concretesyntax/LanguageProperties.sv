@@ -53,6 +53,13 @@ top::LanguagePropertyDcl ::= 'first_line_regex' '=' r::RegularExpression
   top.unparse = "first_line_regex = " ++ r.regexString;
 }
 
+concrete production lspJarNameProperty
+top::LanguagePropertyDcl ::= 'lsp_jar_name' '=' n::Name
+{
+  top.langProperty = lspJarNameProp(n.name);
+  top.unparse = "lsp_jar_name = " ++ n.unparse;
+}
+
 concrete production globalGrammarSpecDcl
 top::LanguagePropertyDcl ::= dcl::GrammarWideSpecDcl
 {
