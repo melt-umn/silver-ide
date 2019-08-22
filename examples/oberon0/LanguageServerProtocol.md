@@ -667,4 +667,126 @@ State ::= state::State input::DidSaveTextDocumentNotification io::IO
 Thus, error messages are now reported after files are saved
 to disk.
 
-#### Finding References and Going To Definitions
+#### Finding References and Going to Definitions/Declarations
+To go to the definition or declaration of any variable or find all the
+references of a given variable, you need to keep track of all the references
+to all the variables and the location of each reference along with the
+location of the corresponding declaration. Thus, we create a nonterminal
+`Reference` with attributes `name`, `referenceLocation` and
+ `definitionLocation`.
+
+ We then collect every time a variable that
+ references something else is used and pass that up the abstract syntax
+tree. In Oberon0 we call this attribute `referenceContribs :: [Reference]`.
+ _Note_: A list is used to collect the references, but if more efficient
+ lookup is required this list can be turned into whatever conveinient
+ data structure is necessary. However, note that the Language Server
+ Protocol will be giving you a position when these requests are made. Thus,
+ the data structure should be able to lookup whether the position
+ is contained within the location of the reference.
+
+ For the simplicity of this example we will simply look through the
+ `referenceContribs` list. To pass these up the AST we aspect almost every
+ production in Oberon0 which can be seen in the `ReferenceTracker.sv` file.
+ The only interesting cases happen in the `Name` and `TypeName` production
+ otherwises we simply collect the reference contributions of the children
+ and append them together.
+
+##### Implementing Go To Definition
+Now that we have a list of all of the references in the Oberon0 file we are
+dealing with let's look at how the Language Server Protocol handles go to
+definition requests and responses. The `GoToDefintionRequest` has an
+attribute `gotoDefinitionRequestParams :: TextDocumentPositionParams` which
+has attributes `position :: Position` which contain the position and
+`documentId :: TextDocumentIdentifier`. The `TextDocumentIdentifier`
+ nonterminal has an attribute `uri`.
+
+Thus, to access the DocumentUri and Position of a `GoToDefintionRequest`
+the access would be `_.gotoDefinitionRequestParams.position` and
+`_.gotoDefinitionRequestParams.documentId.uri`.
+
+After grabbing the document with this file name, we look through our
+references list to find the reference that contains the position specified
+in the parameters. After finding this reference, we can simply grab and
+return the attribute providing the definition location.
+
+This can be abstracted to a conveinient reusable function
+```
+function getDefinitionLocation
+Maybe<Location> ::= params::TextDocumentPositionParams state::State
+{
+  local file :: String = uriToFile(params.textDocumentId.uri);
+  local docM :: Maybe<LSPDocument> = getDocument(file, state);
+
+  local ast :: Maybe<Decorated Module> = docMaybe.fromJust.lastValidAst;
+  local refM :: Maybe<Reference> = find(referenceContainsPosition(params.position, _), ast.fromJust.referenceContribs);
+
+  return
+    if docM.isJust && ast.isJust && refM.isJust
+    then just(refM.fromJust.definitionLocation)
+    else nothing();
+}
+```
+This function takes in the parameters of the goto requests and the state
+and returns a location for the definition if it exists. Now we need to
+fit the appropriate signature for the go to definition request and provide
+the appropriate return value by the Language Server Protocol.
+
+That can be done as follows
+```
+function handleGoToDef
+Pair<State GoToDefinitionResult> ::= state::State input::GoToDefinitionRequest io::IO
+{
+  local defLoc :: Maybe<Location> = getDefinitionLocation(input.gotoDefinitionRequestParams, state);
+  return
+  if defLoc.isJust
+  then pair(state, gotoDefinitionResultLocation(silverLocationToLSPLocation(defLoc.fromJust)))
+  else pair(state, nullGoToDefinitionResult());
+}
+```
+Recall the naming conventions established earlier for result types. Look
+back earlier in the document if you have forgotten as this will make the
+LSP library much more intuitive.
+
+__Note__: There are 3 other very similar requests
+`GoToDeclarationRequest`, `GoToImplementationRequest` and
+`GoToTypeDefinitionRequest`. All 3 of these requests all have input
+parameters of type `TextDocumentPositionParams` and return a `Location`.
+These would be implemented in an almost identical fashion.
+
+##### Implementing Find References Request
+To find all the references for a particular reference, we need to find the
+location of the definition of the reference and then find all other
+references with the identical location. Thus, our handy
+ `getDefinitionLocation` will be of great use.
+
+ For a FindReferencesRequest, the parameters are `ReferenceParams` which
+ contain the same parameters as `TextDocumentPositionParams`, but also
+ contain an additional attribute of type `ReferenceContext` which as of
+ now contains a boolean indicating whether to include the declaration in
+ the references. For simplicity in this tutorial, we will assume this is
+ always true. The `FindReferencesResult` takes only a list of locations.
+
+Thus, to convert `ReferenceParams` to `TextDocumentPositionParams` we will
+use a simple conversion function that exists within the LSP library called
+`referenceParamsToTextDocumentPositionParams`
+ ```
+ function handleFindReferences
+ Pair<State FindReferencesResult> ::= state::State input::FindReferencesRequest io::IO
+ {
+    local file :: String = uriToFile(input.findReferenceParams.textDocumentId.uri);
+    local docM :: Maybe<LSPDocument> = getDocument(file, state);
+
+    local ast :: Maybe<Decorated Module> = docMaybe.fromJust.lastValidAst;
+
+    local defLoc :: Maybe<Location> = getDefinitionLocation(referenceParamsToTextDocumentPositionParams(input.findReferenceParams), state);
+
+    local matchingRefs :: [Reference] = filter(referenceHasDefinitionLocation(defLoc.fromJust, _), ast.referenceContribs)
+
+    return
+    if defLoc.isJust
+    then
+    else pair(state, nullFindReferencesResult());
+
+ }
+```
