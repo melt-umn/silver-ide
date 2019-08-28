@@ -54,7 +54,7 @@ top::LanguagePropertyDcl ::= 'first_line_regex' '=' r::RegularExpression
 }
 
 concrete production lspJarNameProperty
-top::LanguagePropertyDcl ::= 'lsp_jar_name' '=' n::Name
+top::LanguagePropertyDcl ::= 'lsp_jar_name' '=' n::JarName
 {
   top.langProperty = lspJarNameProp(n.name);
   top.unparse = "lsp_jar_name = " ++ n.unparse;

@@ -12,7 +12,6 @@ file. So for oberon0 this would look like
 ```
 specification Oberon0LSP;
 global ide_specification {
-      language_name = oberon0;
       lsp_jar_name = oberon0.lsp;
 }
 ```

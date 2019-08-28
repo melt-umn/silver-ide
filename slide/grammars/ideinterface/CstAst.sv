@@ -50,7 +50,7 @@ top::IDEInterfaceSyntaxRoot ::= s::IDEInterfaceSyntax
 
     startServerProcess () {
       const command = "java"
-      const args = ["-jar", "${top.buildEnv.silverIDEHome}/generated/LSPServers/${lspDirName}LanguageServer/target/${lspDirName}-1.0.jar"]
+      const args = ["-jar", "${top.buildEnv.silverIDEHome}generated/LSPServers/${lspDirName}LanguageServer/target/${lspDirName}LanguageServer-1.0.jar"]
       const childProcess = cp.spawn(command, args)
       this.captureServerErrors(childProcess)
       if (debug) {
@@ -60,7 +60,7 @@ top::IDEInterfaceSyntaxRoot ::= s::IDEInterfaceSyntax
         if (!childProcess.killed) {
         atom.notifications.addError('${languageName}-LanguageServer stopped unexpectedly.', {
           dismissable: true,
-          description: this.processStdErr ? "<code> + "this.processStdErr + "</code>" : "Exit code: " + exitCode
+          description: this.processStdErr ? "<code> + " + this.processStdErr + "</code>" : "Exit code: " + exitCode
         })
       }
     })

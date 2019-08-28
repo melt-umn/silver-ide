@@ -1,6 +1,6 @@
 {
-  "name": "ide-atom-YOUR-LANGUAGE-NAME",
-  "main": "./lib/main",
+  "name": "ide-YOUR-LANGUAGE-NAME",
+  "main": "./lib/AtomPackageLSPMain",
   "version": "1.0.0",
   "description": "Language support for Atom-IDE.",
   "license": "MIT",
@@ -68,7 +68,7 @@
     },
     "find-references": {
       "versions": {
-        "0.1.0": "provideFindReferences"
+        "0.1.0": "provideReferences"
       }
     },
     "outline-view": {

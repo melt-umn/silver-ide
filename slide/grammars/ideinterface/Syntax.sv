@@ -31,12 +31,17 @@ top::IDEInterfaceSyntaxDcl ::= name::String properties::IDEInterfaceTerminalProp
       else
         nothing();
 
+    -- check if any direct declarations were made
     local atomMarkupMaybe::Maybe<String> = lookupBy(stringEq, name, top.spec.atomMarkups);
+    -- check if it satisfies any wildcards 
+    local atomWildcardMarkup :: [String] = lookupAllMatchingCriteria(top, top.spec.atomWildcardMarkups);
     top.atomScopes = 
       if prefixMarkup.isJust 
       then buildAtomScopeText(prefixMarkup.fromJust, name)
       else if atomMarkupMaybe.isJust 
       then buildAtomScopeText(atomMarkupMaybe.fromJust, name)
+      else if !null(atomWildcardMarkup)
+      then buildAtomScopeText(head(atomWildcardMarkup), name)
       else "";
 }
 

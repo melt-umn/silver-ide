@@ -84,6 +84,10 @@ IOVal<Integer> ::= args::[String] specParser::SpecParser ioIn::IO
       printM("LSP jar name not specified as a global property of your language.\n");
       return 11;
     }
+    else if cmdArgs.wantAtomLanguageFile && !spec.treesitterParserName.isJust then {
+      printM("No language parser property was specified.\n");
+      return 3;
+    }
     else {
       if cmdArgs.wantAtomLanguageFile then {
         printM("Received --atom-language-file flag printing out " ++ languageName ++ ".cson\n");
@@ -114,7 +118,7 @@ Pair<String Integer> ::= parseResult::Either<String Decorated CmdArgs> cmdArgs::
   else if null(cmdArgs.cmdRemaining)
   then pair("No ide interface metadata file provided. Run silver with --ide-interface flag with the grammar to generate this file\n", 2)
   else if null(tail(cmdArgs.cmdRemaining))
-  then pair("No specification list provided", 3)
+  then pair("No specification list provided\n", 3)
   else pair("", 0);
 }
 
@@ -123,7 +127,7 @@ Pair<String Integer> ::= specListExists::IOVal<Boolean> specListFile::String par
 {
   return
   if !specListExists.iovalue
-  then pair("Specification list file could not be found", 1)
+  then pair("Specification list file could not be found\n", 1)
   else if !parseAttempt.parseSuccess 
   then pair("Failed parsing specification file list " ++ specListFile ++ " with error " ++ parseAttempt.parseError.parseErrors ++ "\n", 2)
   else pair("", 0);
@@ -137,7 +141,5 @@ Pair<String Integer> ::= parseAttempt::IOVal<Either<[ParseError] Spec>> spec::Sp
   then pair("Errors parsing specification files:\n" ++ implode("\n", map((.parseErrors), parseAttempt.iovalue.fromLeft)), 1)
   else if !spec.langName.isJust
   then pair("No global language name property was specified.\n", 2)
-  else if !spec.treesitterParserName.isJust 
-  then pair("No language parser property was specified.\n", 3)
   else pair("", 0);
 }
