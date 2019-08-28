@@ -26,7 +26,7 @@ esac
   SILVER_IDE_SCRIPT=`${READLINK} ~/bin/slide`
   SILVER_IDE_HOME="${SILVER_IDE_SCRIPT/scripts\/slide/}"
   SILVER_IDE_GENERATED_DIR=$SILVER_IDE_HOME/generated
-  atom_packages_directory=$SILVER_GENERATED_IDE_DIR/atom
+  atom_packages_directory=$SILVER_IDE_GENERATED_DIR/atom
 }
 
 

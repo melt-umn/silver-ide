@@ -34,7 +34,6 @@ copy_generic_lsp_package()
   echo "Copying generic Atom Language Server Protocol package"
   cp -r ${SILVER_IDE_HOME}/genericAtomLSPPackage/* ${outputLocation}
   cd ${outputLocation}
-  apm link ${outputLocation}
   echo "Done copying atom Language Server Protocol package"
 }
 
@@ -48,7 +47,7 @@ change_package_json()
 move_main_file() 
 {
   cd ${original_dir}
-  mv AtomPackageLSPMain.js ${outputLocation}/lib
+  cp AtomPackageLSPMain.js ${outputLocation}/lib
   cd ${outputLocation}
 }
 
@@ -72,4 +71,5 @@ copy_generic_lsp_package
 change_package_json
 move_main_file
 cd $outputLocation
+apm link ${outputLocation}
 npm install

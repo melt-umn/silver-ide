@@ -29,10 +29,9 @@ esac
   fi
   SILVER_SCRIPT=`${READLINK} ~/bin/silver`
   SILVER_HOME="${SILVER_SCRIPT/support\/bin\/silver/}"
-  SILVER_GENERATED_IDE_DIR=$SILVER_HOME/generated/ide
-  treesitter_parsers_directory=$SILVER_GENERATED_IDE_DIR/treesitter
   SILVER_IDE_SCRIPT=`${READLINK} ~/bin/slide`
   SILVER_IDE_HOME="${SILVER_IDE_SCRIPT/scripts\/slide/}"
+  treesitter_parsers_directory=$SILVER_IDE_HOME/generated/treesitter
 }
 
 generate_treesitter_parser()
@@ -75,10 +74,12 @@ generate_treesitter_parser()
 
 modify_grammar_js()
 {
-  echo "Adding conflicts to grammar.js file"
-  java -jar $SILVER_HOME/jars/CopperCompiler.jar -dump -dumpfile ConflictsDump.xml -dumptype xml -skin xml modified_copper.xml
-  java -jar $SILVER_IDE_HOME/jars/TreesitterConflicts.jar grammar.js ConflictsDump.xml
-  echo "Conflicts added to grammar.js file"
+  if [ $am_creating = true ]; then 
+    echo "Adding conflicts to grammar.js file"
+    java -jar $SILVER_HOME/jars/CopperCompiler.jar -dump -dumpfile ConflictsDump.xml -dumptype xml -skin xml modified_copper.xml
+    java -jar $SILVER_IDE_HOME/jars/TreesitterConflicts.jar grammar.js ConflictsDump.xml
+    echo "Conflicts added to grammar.js file"
+  fi
 }
 
 validate_version_number()
@@ -121,6 +122,7 @@ version_num=""
 version_update_type=""
 package_scope=""
 force_publish_attempt=false
+am_creating=false
 while [ "$1" != "" ]; do
   if [ "$1" = "--scope" ]; then
     shift
@@ -130,6 +132,8 @@ while [ "$1" != "" ]; do
     lang_name=$1
   elif [ "$1" = "--publish" ]; then
     publish_parser=true
+  elif [ "$1" = "--create" ]; then
+    am_creating=true
   elif [ "$1" = "--force-publish" ]; then
     publish_parser=true
     force_publish_attempt=true

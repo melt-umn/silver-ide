@@ -35,6 +35,16 @@ if [ ! -f ~/bin/gen-atom-language-package ]; then
   echo "Symbolic link for gen-atom-language-package script set up"
 fi
 
+if [ ! -f ~/bin/gen-atom-lsp-package ]; then
+  ln -s $(pwd)/scripts/gen-atom-lsp-package ~/bin/gen-atom-lsp-package
+  echo "Symbolic link for gen-atom-lsp-package script set up"
+fi
+
+if [ ! -f ~/bin/hook-into-genericLanguageServer ]; then
+  ln -s $(pwd)/scripts/hook-into-genericLanguageServer ~/bin/hook-into-genericLanguageServer
+  echo "Symbolic link for hook-into-genericLanguageServer script set up"
+fi
+
 # set up a symbolic link so Atom finds our highlighting theme
 if [ ! -f ~/.atom/packages/melt-atom-light-syntax ]; then
   echo "Adding MELT light demo theme to Atom packages"
