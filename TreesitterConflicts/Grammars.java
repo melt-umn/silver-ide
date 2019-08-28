@@ -130,7 +130,7 @@ public class Grammars {
   public String getDisplayNameByTag(int tag) {
     GrammarSymbol sym = getGrammarSymbolByTag(tag);
     if (sym == null) {
-      throw IllegalArgumentException("Grammar Symbol with tag: " + tag + " not found in this collection of grammars");
+      throw new IllegalArgumentException("Grammar Symbol with tag: " + tag + " not found in this collection of grammars");
     } else {
       return sym.getDisplayName();
     }

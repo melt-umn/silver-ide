@@ -68,7 +68,6 @@ public abstract class GrammarSymbol {
   * @return the first set of the grammar symbol.
   * @since 1.0
   */
-  */
   public FirstSet getFirstSet() {
     return fstSet;
   }
