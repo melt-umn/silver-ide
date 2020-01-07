@@ -2,6 +2,12 @@
 
 set -eu
 
+# include Silver bash library functions `set_readlink` and
+# `setup_syn_link`
+source ~/bin/silver-bash-lib.sh
+set_readlink
+
+
 if [ ! -d jars ]; then
   mkdir -p jars
 fi
@@ -20,37 +26,12 @@ cd ..
 echo "Built Treesitter conflicts jar"
 
 # Set up symbolic links
-if [ ! -f ~/bin/gen-treesitter-parser ]; then
-  ln -s $(pwd)/scripts/gen-treesitter-parser ~/bin/gen-treesitter-parser
-  echo "Symbolic link for gen-treesitter-parser script set up"
-fi
-
-if [ ! -f ~/bin/slide ]; then
-  ln -s $(pwd)/scripts/slide ~/bin/slide
-  echo "Symbolic link for slide set up"
-fi
-
-if [ ! -f ~/bin/gen-atom-language-package ]; then
-  ln -s $(pwd)/scripts/gen-atom-language-package ~/bin/gen-atom-language-package
-  echo "Symbolic link for gen-atom-language-package script set up"
-fi
-
-if [ ! -f ~/bin/gen-atom-lsp-package ]; then
-  ln -s $(pwd)/scripts/gen-atom-lsp-package ~/bin/gen-atom-lsp-package
-  echo "Symbolic link for gen-atom-lsp-package script set up"
-fi
-
-if [ ! -f ~/bin/hook-into-genericLanguageServer ]; then
-  ln -s $(pwd)/scripts/hook-into-genericLanguageServer ~/bin/hook-into-genericLanguageServer
-  echo "Symbolic link for hook-into-genericLanguageServer script set up"
-fi
-
-# set up a symbolic link so Atom finds our highlighting theme
-if [ ! -f ~/.atom/packages/melt-atom-light-syntax ]; then
-  echo "Adding MELT light demo theme to Atom packages"
-  ln -s $(pwd)/melt-atom-light-syntax ~/.atom/packages/melt-atom-light-syntax
-  echo "Added MELT light demo theme to Atom packages"
-fi
+setup_sym_link $(pwd)/scripts/gen-treesitter-parser ~/bin/gen-treesitter-parser
+setup_sym_link $(pwd)/scripts/slide ~/bin/slide
+setup_sym_link $(pwd)/scripts/gen-atom-language-package ~/bin/gen-atom-language-package
+setup_sym_link $(pwd)/scripts/gen-atom-lsp-package ~/bin/gen-atom-lsp-package
+setup_sym_link $(pwd)/scripts/hook-into-genericLanguageServer ~/bin/hook-into-genericLanguageServer
+setup_sym_link $(pwd)/melt-atom-light-syntax ~/.atom/packages/melt-atom-light-syntax
 
 echo "Building slide"
 cd slide
