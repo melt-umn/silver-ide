@@ -39,8 +39,8 @@ ExcludeRules ::= ruleset1::ExcludeRules ruleset2::ExcludeRules
   return
   case ruleset1 of
   | nilExcludeRules() -> ruleset2
-  | consExcludeRules(rule, rest) -> appendExcludeRules(rest, 
-      consExcludeRules(rule, ruleset2))
+  | consExcludeRules(rrule, rest) -> appendExcludeRules(rest, 
+      consExcludeRules(rrule, ruleset2))
   end;
 }
 
