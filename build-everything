@@ -8,13 +8,9 @@ source ~/bin/silver-bash-lib.sh
 set_readlink
 
 
-if [ ! -d jars ]; then
-  mkdir -p jars
-fi
+mkdir -p jars
+mkdir -p generated
 
-if [ ! -d generated ]; then
-  mkdir -p generated
-fi
 
 # Build treesitter conflicts library
 echo "Building Treesitter conflicts jar"
@@ -31,7 +27,13 @@ setup_sym_link $(pwd)/scripts/slide ~/bin/slide
 setup_sym_link $(pwd)/scripts/gen-atom-language-package ~/bin/gen-atom-language-package
 setup_sym_link $(pwd)/scripts/gen-atom-lsp-package ~/bin/gen-atom-lsp-package
 setup_sym_link $(pwd)/scripts/hook-into-genericLanguageServer ~/bin/hook-into-genericLanguageServer
-setup_sym_link $(pwd)/melt-atom-light-syntax ~/.atom/packages/melt-atom-light-syntax
+
+if [ -d ~/.atom/packages ]; then
+    setup_sym_link $(pwd)/melt-atom-light-syntax ~/.atom/packages/melt-atom-light-syntax
+else
+    echo "Check that Atom is installed.  Directory ~/.atom/packages not found."
+    exit 2
+fi
 
 echo "Building slide"
 cd slide
