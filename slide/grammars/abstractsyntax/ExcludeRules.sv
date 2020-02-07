@@ -22,9 +22,9 @@ top::ExcludeRules ::=
 }
 
 abstract production consExcludeRules
-top::ExcludeRules ::= rule::ExcludeRule rest::ExcludeRules
+top::ExcludeRules ::= rrule::ExcludeRule rest::ExcludeRules
 {
-  top.excludeTests = rule.excludeTests ++ rest.excludeTests;
+  top.excludeTests = rrule.excludeTests ++ rest.excludeTests;
 }
 
 abstract production excludeByName
